@@ -49,18 +49,18 @@ export default function Navbar() {
         transition={{ duration: 0.35, ease: "easeInOut" }}
         className="fixed top-4 left-0 right-0 z-50 mx-auto w-[92%] sm:w-[96%] max-w-7xl glass-nav rounded-2xl shadow-xl border border-white/20 dark:border-white/10 print:hidden transform-gpu will-change-transform"
       >
-        <div className="px-6 sm:px-8 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+        <div className="px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 gap-1">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center gap-3 group">
                 <img
                   src="/images/logo.png"
                   alt="RossyFlowers"
-                  className="w-10 h-10 object-contain"
+                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                 />
-                <span translate="no" className="notranslate font-serif text-2xl sm:text-3xl tracking-widest text-luxury-black font-semibold group-hover:text-gold-500 transition-colors">
-                  Rossy<span className="text-gold-400 font-light font-sans text-xl tracking-normal">Flowers</span>
+                <span translate="no" className="notranslate font-serif text-lg sm:text-2xl md:text-3xl tracking-widest text-luxury-black font-semibold group-hover:text-gold-500 transition-colors">
+                  Rossy<span className="text-gold-400 font-light font-sans text-base sm:text-xl tracking-normal">Flowers</span>
                 </span>
               </Link>
             </div>
@@ -84,7 +84,7 @@ export default function Navbar() {
             </nav>
 
             {/* Utility Icons */}
-            <div className="flex items-center space-x-3 sm:space-x-6">
+            <div className="flex items-center space-x-1 sm:space-x-4">
               {/* Admin Panel Link */}
               <Link
                 href="/admin/login"
