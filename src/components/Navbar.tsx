@@ -49,7 +49,7 @@ export default function Navbar() {
         transition={{ duration: 0.35, ease: "easeInOut" }}
         className="fixed top-4 left-0 right-0 z-50 mx-auto w-[92%] sm:w-[96%] max-w-7xl glass-nav rounded-2xl shadow-xl border border-white/20 dark:border-white/10 print:hidden transform-gpu will-change-transform"
       >
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-6 sm:px-8 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex-shrink-0">
