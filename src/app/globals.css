@@ -1,26 +1,188 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: var(--font-oswald), "Oswald", sans-serif;
+  --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+
+  --color-gold-50: #FAF8F5;
+  --color-gold-100: #F3ECE2;
+  --color-gold-200: #E7D9C7;
+  --color-gold-300: #D8BF9D;
+  --color-gold-400: #C5A880;
+  --color-gold-500: #B79469;
+  --color-gold-600: #A3845C;
+  --color-gold-700: #886D4C;
+  --color-gold-800: #6B563D;
+  --color-gold-900: #51412E;
+
+  --color-luxury-black: var(--luxury-black);
+  --color-luxury-charcoal: var(--luxury-charcoal);
+  --color-luxury-cream: var(--luxury-cream);
+  --color-luxury-gray: var(--luxury-gray);
+  --color-luxury-rose: var(--luxury-rose);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #E0F2FE; /* Celeste claro / Sky-100 */
+  --foreground: #0F172A; /* Azul muy oscuro / Slate-900 */
+
+  --luxury-black: #0F172A;
+  --luxury-charcoal: #1E293B;
+  --luxury-cream: #F0F9FF; /* Sky-50 */
+  --luxury-gray: #475569;
+  --luxury-rose: #BAE6FD; /* Sky-200 */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+.dark {
+  --background: #0B0B0B;
+  --foreground: #F5F3EC;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --luxury-black: #F5F3EC;
+  --luxury-charcoal: #1E1E1E;
+  --luxury-cream: #0F0F0F;
+  --luxury-gray: #A0A0A0;
+  --luxury-rose: #1E1412;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Custom Slim Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C5A880;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A3845C;
+}
+
+/* Premium Animations & Utilities */
+.glass-nav {
+  background: rgba(224, 242, 254, 0.85); /* Sky-100 */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(197, 168, 128, 0.15);
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.dark .glass-nav {
+  background: rgba(15, 15, 15, 0.85);
+  border-bottom: 1px solid rgba(197, 168, 128, 0.25);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(197, 168, 128, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.03);
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.dark .glass-card {
+  background: rgba(30, 30, 30, 0.65);
+  border: 1px solid rgba(197, 168, 128, 0.22);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.20);
+}
+
+.glass-card-dark {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(197, 168, 128, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Input styles */
+.luxury-input {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(197, 168, 128, 0.3);
+  color: var(--foreground);
+  transition: all 0.3s ease;
+}
+
+.dark .luxury-input {
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(197, 168, 128, 0.4);
+}
+
+.luxury-input:focus {
+  outline: none;
+  border-color: #B79469;
+  box-shadow: 0 0 0 2px rgba(197, 168, 128, 0.2);
+  background: #ffffff;
+}
+
+.dark .luxury-input:focus {
+  background: #141414;
+}
+
+/* Shimmer animation for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #BAE6FD 25%, #7DD3FC 50%, #BAE6FD 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, #1A1A1A 25%, #2A2A2A 50%, #1A1A1A 75%);
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  html, body {
+    background-color: white !important;
+    color: black !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prevent page breaks inside important elements */
+  table, tr, td, th, tbody, thead {
+    page-break-inside: avoid !important;
+  }
+  
+  #receipt-container {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Hide absolutely everything else that shouldn't be printed */
+  .print\:hidden {
+    display: none !important;
+  }
 }
