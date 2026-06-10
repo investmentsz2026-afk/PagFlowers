@@ -143,68 +143,70 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
-              />
-
-              {/* Drawer container */}
-              <motion.div
-                initial={{ x: '-100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '-100%' }}
-                transition={{ type: 'tween', duration: 0.3 }}
-                className="fixed inset-y-0 left-0 z-50 w-[80%] max-w-sm bg-[var(--luxury-cream)] shadow-2xl flex flex-col h-full border-r border-gold-400/20 md:hidden"
-              >
-                {/* Drawer Header */}
-                <div className="px-6 py-6 border-b border-gold-400/10 flex items-center justify-between bg-[var(--background)]">
-                  <span className="font-serif text-xl tracking-widest text-luxury-black font-semibold">
-                    MENÚ
-                  </span>
-                  <button
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 text-luxury-black/60 hover:text-gold-500 transition-colors focus:outline-none"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-                
-                {/* Drawer Links */}
-                <div className="px-4 pt-6 pb-6 space-y-2 overflow-y-auto flex-1 bg-[var(--background)]">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.name}
-                      href={link.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-4 font-sans text-sm tracking-widest uppercase text-luxury-black/80 hover:bg-gold-50/50 hover:text-gold-500 rounded-lg transition-all"
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
-                  
-                  <div className="pt-6 mt-6 border-t border-gold-400/10">
-                    <Link
-                      href="/admin/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block px-4 py-4 font-sans text-xs tracking-widest uppercase text-gold-600 hover:bg-gold-50/50 rounded-lg transition-all"
-                    >
-                      Panel de Administración
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
       </motion.header>
+
+      {/* Mobile Navigation Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
+            />
+
+            {/* Drawer container */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="fixed inset-y-0 left-0 z-[60] w-[80%] max-w-sm bg-[var(--luxury-cream)] shadow-2xl flex flex-col h-full border-r border-gold-400/20 md:hidden"
+            >
+              {/* Drawer Header */}
+              <div className="px-6 py-6 border-b border-gold-400/10 flex items-center justify-between bg-[var(--background)]">
+                <span className="font-serif text-xl tracking-widest text-luxury-black font-semibold">
+                  MENÚ
+                </span>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-luxury-black/60 hover:text-gold-500 transition-colors focus:outline-none"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              {/* Drawer Links */}
+              <div className="px-4 pt-6 pb-6 space-y-2 overflow-y-auto flex-1 bg-[var(--background)]">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 py-4 font-sans text-sm tracking-widest uppercase text-luxury-black/80 hover:bg-gold-50/50 hover:text-gold-500 rounded-lg transition-all"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+                
+                <div className="pt-6 mt-6 border-t border-gold-400/10">
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-4 py-4 font-sans text-xs tracking-widest uppercase text-gold-600 hover:bg-gold-50/50 rounded-lg transition-all"
+                  >
+                    Panel de Administración
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
 
       {/* Cart Slider Drawer */}
       <AnimatePresence>
