@@ -57,10 +57,10 @@ export default function Navbar() {
                 <img
                   src="/images/logo.png"
                   alt="RossyFlowers"
-                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                  className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
                 />
-                <span translate="no" className="notranslate font-serif text-lg sm:text-2xl md:text-3xl tracking-widest text-luxury-black font-semibold group-hover:text-gold-500 transition-colors">
-                  Rossy<span className="text-gold-400 font-light font-sans text-base sm:text-xl tracking-normal">Flowers</span>
+                <span translate="no" className="notranslate font-serif text-xl sm:text-3xl md:text-4xl tracking-widest text-luxury-black font-semibold group-hover:text-gold-500 transition-colors">
+                  Rossy<span className="text-gold-400 font-light font-sans text-lg sm:text-2xl tracking-normal">Flowers</span>
                 </span>
               </Link>
             </div>
