@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       },
       select: { total: true },
     });
-    const todaySales = todayOrders.reduce((sum, o) => sum + o.total, 0);
+    const todaySales = todayOrders.reduce((sum: number, o: { total: number }) => sum + o.total, 0);
 
     const monthOrders = await prisma.order.findMany({
       where: {
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       },
       select: { total: true },
     });
-    const monthSales = monthOrders.reduce((sum, o) => sum + o.total, 0);
+    const monthSales = monthOrders.reduce((sum: number, o: { total: number }) => sum + o.total, 0);
 
     // 2. Fetch order status counts
     const pendingCount = await prisma.order.count({
