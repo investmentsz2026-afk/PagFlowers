@@ -84,7 +84,7 @@ export default function Navbar() {
             </nav>
 
             {/* Utility Icons */}
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3 sm:space-x-6">
               {/* Admin Panel Link */}
               <Link
                 href="/admin/login"
