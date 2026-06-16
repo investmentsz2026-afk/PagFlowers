@@ -131,9 +131,9 @@ export default function ConfirmationPage({ params }: PageProps) {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 print:px-0">
         
         {/* Print-only invoice section */}
-        <div className="bg-[var(--background)] border border-gold-400/10 rounded-3xl p-6 sm:p-12 shadow-xl space-y-8 print:border-none print:shadow-none print:p-0 print:bg-white print:text-black print:space-y-0">
+        <div className="bg-[var(--luxury-cream)]/75 backdrop-blur-xl border border-gold-400/10 rounded-3xl p-6 sm:p-12 shadow-xl space-y-8 print:border-none print:shadow-none print:p-0 print:bg-white print:text-black print:space-y-0">
           
-          <div id="receipt-container" className="space-y-8 bg-[var(--background)] print:bg-white print:text-black print:p-6 print:max-w-2xl print:mx-auto print:space-y-4">
+          <div id="receipt-container" className="space-y-8 bg-transparent print:bg-white print:text-black print:p-6 print:max-w-2xl print:mx-auto print:space-y-4">
             {/* Header Card */}
             <div className="text-center space-y-4 print:text-center print:border-b print:border-black/20 print:pb-4 print:space-y-2">
               <div className="flex justify-center print:hidden">
@@ -153,7 +153,7 @@ export default function ConfirmationPage({ params }: PageProps) {
           </div>
 
           {/* Details Card */}
-          <div className="bg-[var(--background)] border border-gold-400/10 rounded-2xl p-6 sm:p-8 space-y-6 print:bg-transparent print:border-none print:p-0 print:text-black print:space-y-4">
+          <div className="bg-[var(--luxury-cream)]/80 border border-gold-400/10 rounded-2xl p-6 sm:p-8 space-y-6 print:bg-transparent print:border-none print:p-0 print:text-black print:space-y-4">
             <div className="flex flex-col sm:flex-row justify-between border-b border-gold-400/10 pb-4 gap-2">
               <div>
                 <span className="text-[10px] font-sans uppercase text-luxury-black/40 print:text-black/50">Código de Pedido</span>
@@ -206,7 +206,7 @@ export default function ConfirmationPage({ params }: PageProps) {
                 <h4 className="font-serif text-xs font-semibold text-luxury-black flex items-center gap-1.5">
                   <Sparkles size={14} className="text-gold-500" /> Tarjeta Dedicatoria Lacrada
                 </h4>
-                <p className="font-sans text-xs italic text-luxury-black/60 bg-[var(--background)] p-4 rounded-lg border border-gold-400/5 print:border-none print:bg-white print:text-black">
+                <p className="font-sans text-xs italic text-luxury-black/60 bg-[var(--background)]/60 p-4 rounded-lg border border-gold-400/5 print:border-none print:bg-white print:text-black">
                   "{order.cardMessage}"
                 </p>
               </div>

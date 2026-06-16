@@ -25,14 +25,14 @@
 }
 
 :root {
-  --background: #E0F2FE; /* Celeste claro / Sky-100 */
-  --foreground: #0F172A; /* Azul muy oscuro / Slate-900 */
+  --background: #FF8A73; /* Strong Saturated Warm Coral/Peach background */
+  --foreground: #2B1210; /* Deeper warm dark cocoa */
 
-  --luxury-black: #0F172A;
-  --luxury-charcoal: #1E293B;
-  --luxury-cream: #F0F9FF; /* Sky-50 */
-  --luxury-gray: #475569;
-  --luxury-rose: #BAE6FD; /* Sky-200 */
+  --luxury-black: #2B1210;
+  --luxury-charcoal: #3D1612;
+  --luxury-cream: #FFC4B5; /* Warm, colorful peach/cream background (no longer off-white) */
+  --luxury-gray: #8E544B;
+  --luxury-rose: #FF7054; /* Saturated vibrant coral rose */
 }
 
 .dark {
@@ -74,7 +74,7 @@ body {
 
 /* Premium Animations & Utilities */
 .glass-nav {
-  background: rgba(224, 242, 254, 0.85); /* Sky-100 */
+  background: rgba(255, 196, 181, 0.85); /* Rich transparentized luxury peach */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(197, 168, 128, 0.15);
@@ -87,7 +87,7 @@ body {
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 188, 172, 0.65); /* Richer warm peach glass card background */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(197, 168, 128, 0.12);
@@ -111,7 +111,7 @@ body {
 
 /* Input styles */
 .luxury-input {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 188, 172, 0.85); /* Saturated input background */
   border: 1px solid rgba(197, 168, 128, 0.3);
   color: var(--foreground);
   transition: all 0.3s ease;
@@ -126,7 +126,7 @@ body {
   outline: none;
   border-color: #B79469;
   box-shadow: 0 0 0 2px rgba(197, 168, 128, 0.2);
-  background: #ffffff;
+  background: #FFAF9C; /* Saturated peach-coral focus */
 }
 
 .dark .luxury-input:focus {

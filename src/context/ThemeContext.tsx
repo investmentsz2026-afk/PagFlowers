@@ -17,13 +17,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('rossy-theme') as Theme | null;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     let activeTheme: Theme = 'light';
     if (savedTheme) {
       activeTheme = savedTheme;
-    } else if (systemPrefersDark) {
-      activeTheme = 'dark';
     }
     
     setTheme(activeTheme);

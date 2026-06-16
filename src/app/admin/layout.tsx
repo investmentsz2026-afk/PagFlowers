@@ -16,7 +16,8 @@ import {
   UserCircle,
   Shield,
   AlertTriangle,
-  Truck
+  Truck,
+  Tags
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -107,6 +108,7 @@ function AuthenticatedAdmin({ children }: { children: React.ReactNode }) {
   const menuItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
     { name: 'Productos', path: '/admin/products', icon: <ShoppingBag size={18} /> },
+    { name: 'Categorías', path: '/admin/categories', icon: <Tags size={18} /> },
     { name: 'Pedidos', path: '/admin/orders', icon: <Receipt size={18} /> },
     { name: 'Zonas de Envío', path: '/admin/delivery', icon: <Truck size={18} /> },
     { name: 'Clientes', path: '/admin/clients', icon: <Users size={18} /> },

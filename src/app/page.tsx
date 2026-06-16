@@ -118,35 +118,35 @@ export default async function HomePage() {
       <HeroCarousel banners={banners} />
 
       {/* 2. Brand Value Props Section */}
-      <section className="py-16 bg-[var(--background)] border-b border-gold-400/10">
+      <section className="py-16 bg-[#F46261] dark:bg-[var(--background)] border-b border-white/20 dark:border-gold-400/10 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 text-center">
             <MotionView direction="up" delay={0.1} className="space-y-3">
-              <span className="text-gold-500 font-semibold font-serif text-3xl tracking-widest block">100%</span>
-              <h3 className="font-sans text-xs uppercase tracking-wider text-luxury-black font-bold">Frescura Garantizada</h3>
-              <p className="font-sans text-xs text-luxury-black/50 px-4">Flores de invernadero seleccionadas una por una</p>
+              <span className="text-white dark:text-gold-500 font-semibold font-serif text-3xl tracking-widest block drop-shadow-sm dark:drop-shadow-none">100%</span>
+              <h3 className="font-sans text-xs uppercase tracking-wider text-white dark:text-luxury-black font-bold drop-shadow-sm dark:drop-shadow-none">Frescura Garantizada</h3>
+              <p className="font-sans text-xs text-white/90 dark:text-luxury-black/50 px-4">Flores de invernadero seleccionadas una por una</p>
             </MotionView>
-            <MotionView direction="up" delay={0.2} className="space-y-3 border-l border-gold-400/10">
-              <span className="text-gold-500 font-semibold font-serif text-3xl tracking-widest block">SAME DAY</span>
-              <h3 className="font-sans text-xs uppercase tracking-wider text-luxury-black font-bold">Despacho Veloz</h3>
-              <p className="font-sans text-xs text-luxury-black/50 px-4">Entregas seguras el mismo día hasta las 4:00 PM</p>
+            <MotionView direction="up" delay={0.2} className="space-y-3 border-l border-white/20 dark:border-gold-400/10">
+              <span className="text-white dark:text-gold-500 font-semibold font-serif text-3xl tracking-widest block drop-shadow-sm dark:drop-shadow-none">SAME DAY</span>
+              <h3 className="font-sans text-xs uppercase tracking-wider text-white dark:text-luxury-black font-bold drop-shadow-sm dark:drop-shadow-none">Despacho Veloz</h3>
+              <p className="font-sans text-xs text-white/90 dark:text-luxury-black/50 px-4">Entregas seguras el mismo día hasta las 4:00 PM</p>
             </MotionView>
-            <MotionView direction="up" delay={0.3} className="space-y-3 border-l border-gold-400/10">
-              <span className="text-gold-500 font-semibold font-serif text-3xl tracking-widest block">PREMIUM</span>
-              <h3 className="font-sans text-xs uppercase tracking-wider text-luxury-black font-bold">Tarjetas de Autor</h3>
-              <p className="font-sans text-xs text-luxury-black/50 px-4">Dedicatorias de lujo lacradas con cera artesanal</p>
+            <MotionView direction="up" delay={0.3} className="space-y-3 border-l border-white/20 dark:border-gold-400/10">
+              <span className="text-white dark:text-gold-500 font-semibold font-serif text-3xl tracking-widest block drop-shadow-sm dark:drop-shadow-none">PREMIUM</span>
+              <h3 className="font-sans text-xs uppercase tracking-wider text-white dark:text-luxury-black font-bold drop-shadow-sm dark:drop-shadow-none">Tarjetas de Autor</h3>
+              <p className="font-sans text-xs text-white/90 dark:text-luxury-black/50 px-4">Dedicatorias de lujo lacradas con cera artesanal</p>
             </MotionView>
-            <MotionView direction="up" delay={0.4} className="space-y-3 border-l border-gold-400/10">
-              <span className="text-gold-500 font-semibold font-serif text-3xl tracking-widest block">VIP PHOTO</span>
-              <h3 className="font-sans text-xs uppercase tracking-wider text-luxury-black font-bold">Garantía Visual</h3>
-              <p className="font-sans text-xs text-luxury-black/50 px-4">Recibe fotos de tu arreglo antes de la entrega</p>
+            <MotionView direction="up" delay={0.4} className="space-y-3 border-l border-white/20 dark:border-gold-400/10">
+              <span className="text-white dark:text-gold-500 font-semibold font-serif text-3xl tracking-widest block drop-shadow-sm dark:drop-shadow-none">VIP PHOTO</span>
+              <h3 className="font-sans text-xs uppercase tracking-wider text-white dark:text-luxury-black font-bold drop-shadow-sm dark:drop-shadow-none">Garantía Visual</h3>
+              <p className="font-sans text-xs text-white/90 dark:text-luxury-black/50 px-4">Recibe fotos de tu arreglo antes de la entrega</p>
             </MotionView>
           </div>
         </div>
       </section>
 
       {/* 3. Section: "Nuestra Historia / Sobre Nosotros" */}
-      <section id="nosotros" className="py-24 bg-[var(--luxury-cream)] relative scroll-mt-20">
+      <section id="nosotros" className="py-24 bg-[#FFBAA8] dark:bg-[var(--luxury-cream)] relative scroll-mt-20 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             {/* Left Column: Asymmetrical Images Stack */}
@@ -190,13 +190,13 @@ export default async function HomePage() {
                 <div className="pt-4 flex flex-wrap gap-6 items-center">
                   <Link
                     href="/catalog"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--foreground)] text-[var(--background)] hover:bg-gold-500 hover:text-white font-semibold text-xs tracking-widest uppercase transition-all duration-300 rounded shadow-md"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-[#F46261] text-white hover:bg-[#E65A5A] dark:bg-[var(--foreground)] dark:text-[var(--background)] dark:hover:bg-gold-500 font-semibold text-xs tracking-widest uppercase transition-all duration-300 rounded shadow-[0_4px_14px_0_rgba(244,98,97,0.39)] dark:shadow-md"
                   >
                     Ver Catálogo Floral <ArrowRight size={14} />
                   </Link>
                   <a
                     href="#contacto"
-                    className="font-sans text-xs tracking-widest uppercase text-luxury-black hover:text-gold-600 font-bold border-b border-luxury-black hover:border-gold-600 pb-1 transition-all"
+                    className="font-sans text-xs tracking-widest uppercase text-[#F46261] dark:text-luxury-black hover:text-[#E65A5A] dark:hover:text-gold-600 font-bold border-b border-[#F46261] dark:border-luxury-black hover:border-[#E65A5A] dark:hover:border-gold-600 pb-1 transition-all"
                   >
                     Asesoría de Diseño
                   </a>
@@ -218,7 +218,7 @@ export default async function HomePage() {
           className="absolute inset-0 bg-cover bg-center bg-fixed opacity-70 blur-[1px] saturate-100"
           style={{ backgroundImage: `url('/images/hero/banner-1.webp')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-black/20 to-[#0A0A0A] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F46261] via-[#F46261]/80 to-[var(--background)] dark:from-[#0A0A0A] dark:via-black/20 dark:to-[#0A0A0A] pointer-events-none" />
 
         {/* Curved Title Animation with Two 3D Images */}
         <div className="relative w-full flex items-center justify-center min-h-[300px] sm:min-h-[400px] mt-10 mb-8 sm:mb-12">
@@ -320,7 +320,7 @@ export default async function HomePage() {
 
       {/* 5. Exclusive Selection Highlight Section */}
       {exclusiveProducts.length > 0 && (
-        <section className="py-28 bg-gradient-to-br from-sky-100 to-orange-50 dark:from-[#0D0D0D] dark:to-[#0D0D0D] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-500">
+        <section className="py-28 bg-gradient-to-br from-[#FFA58E] to-[#FF8E75] dark:from-[#0D0D0D] dark:to-[#0D0D0D] text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-500">
           <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-gold-400/5 rounded-full blur-[120px]" />
           <div className="absolute left-0 bottom-0 w-[500px] h-[500px] bg-gold-400/5 rounded-full blur-[120px]" />
 
@@ -346,7 +346,7 @@ export default async function HomePage() {
                   key={prod.id}
                   direction="up"
                   delay={idx * 0.2}
-                  className="bg-white/40 dark:bg-[#1A1A1A]/30 backdrop-blur-md rounded-3xl border-[3px] border-t-gold-300 border-l-gold-300 border-b-gold-600 border-r-gold-600 dark:border-t-gold-500 dark:border-l-gold-500 dark:border-b-gold-800 dark:border-r-gold-800 overflow-hidden hover:bg-white/60 dark:hover:bg-[#1A1A1A]/50 transition-all duration-500 flex flex-col group shadow-[0_10px_30px_rgba(212,175,55,0.15)] hover:shadow-[0_15px_40px_rgba(212,175,55,0.35)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] dark:hover:shadow-[0_15px_40px_rgba(212,175,55,0.2)]"
+                  className="bg-[var(--luxury-cream)]/50 dark:bg-[#1A1A1A]/30 backdrop-blur-md rounded-3xl border-[3px] border-t-gold-300 border-l-gold-300 border-b-gold-600 border-r-gold-600 dark:border-t-gold-500 dark:border-l-gold-500 dark:border-b-gold-800 dark:border-r-gold-800 overflow-hidden hover:bg-[var(--luxury-cream)]/70 dark:hover:bg-[#1A1A1A]/50 transition-all duration-500 flex flex-col group shadow-[0_10px_30px_rgba(212,175,55,0.15)] hover:shadow-[0_15px_40px_rgba(212,175,55,0.35)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] dark:hover:shadow-[0_15px_40px_rgba(212,175,55,0.2)]"
                 >
                   <div className="relative aspect-[4/5] bg-neutral-900 overflow-hidden">
                     <img
@@ -384,7 +384,7 @@ export default async function HomePage() {
 
       {/* 6. Featured / Best Seller Products Grid */}
       {featuredProducts.length > 0 && (
-        <section className="relative py-24 bg-gradient-to-b from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-900 overflow-hidden">
+        <section className="relative py-24 bg-gradient-to-b from-[#FFA38C] to-[#FF896E] dark:from-slate-800 dark:to-slate-900 overflow-hidden">
           
           {/* Magic Rings Background Animation */}
           <div className="absolute inset-0 z-0 opacity-80 flex items-center justify-center pointer-events-auto mix-blend-normal dark:mix-blend-screen">
@@ -436,7 +436,7 @@ export default async function HomePage() {
                     key={prod.id}
                     direction="up"
                     delay={idx * 0.1}
-                    className="group flex flex-col border border-gold-400/5 rounded-2xl sm:rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 bg-[var(--background)]"
+                    className="group flex flex-col border border-gold-400/5 rounded-2xl sm:rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 bg-[var(--luxury-cream)]/90 backdrop-blur-md"
                   >
                     <div className="relative aspect-square overflow-hidden bg-neutral-50">
                       <img
@@ -632,16 +632,16 @@ export default async function HomePage() {
       </section>
 
       {/* 9. Client Reviews Section */}
-      <section className="py-24 bg-[var(--luxury-cream)] border-t border-gold-400/10">
+      <section className="py-24 bg-[#F46261] dark:bg-[var(--luxury-cream)] border-t border-white/20 dark:border-gold-400/10 transition-colors duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center space-y-3">
-            <span className="font-sans text-xs tracking-[0.4em] text-gold-600 uppercase font-semibold block">Testimonios Reales</span>
+            <span className="font-sans text-xs tracking-[0.4em] text-white/90 dark:text-gold-600 uppercase font-semibold block drop-shadow-sm dark:drop-shadow-none">Testimonios Reales</span>
             <TextReveal
               tag="h2"
               text="LA EXPERIENCIA ROSSYFLOWERS"
-              className="font-serif text-3xl sm:text-4xl font-bold uppercase tracking-wider text-luxury-black"
+              className="font-serif text-3xl sm:text-4xl font-bold uppercase tracking-wider text-white dark:text-luxury-black drop-shadow-sm dark:drop-shadow-none"
             />
-            <div className="w-16 h-0.5 bg-gold-400 mx-auto mt-4" />
+            <div className="w-16 h-0.5 bg-white/50 dark:bg-gold-400 mx-auto mt-4" />
           </div>
 
           <TestimonialSlider />

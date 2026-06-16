@@ -84,20 +84,20 @@ export default function TrackClient() {
 
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="max-w-xl mx-auto mb-16 relative">
-          <div className="relative flex items-center bg-white dark:bg-[#1A1A1A]/80 backdrop-blur-xl border border-slate-300 dark:border-white/10 rounded-full shadow-lg p-2 transition-all focus-within:shadow-[0_10px_30px_rgba(212,175,55,0.15)] focus-within:border-gold-400">
+          <div className="relative flex items-center bg-white/80 dark:bg-[#1A1A1A]/80 backdrop-blur-xl border border-[#2B1210]/35 dark:border-white/10 rounded-full shadow-lg p-2 transition-all focus-within:shadow-[0_10px_30px_rgba(212,175,55,0.15)] focus-within:border-gold-400">
             <Search className="text-gold-500 ml-4 mr-2" size={24} />
             <input
               type="text"
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
               placeholder="Ej. PF-2026-909438"
-              className="w-full bg-transparent border-none outline-none font-sans text-base py-3 placeholder:text-slate-400 text-slate-900 dark:text-white font-medium"
+              className="w-full bg-transparent border-none outline-none font-sans text-base py-3 placeholder:text-[#2B1210]/55 dark:placeholder:text-slate-400 text-[#111111] dark:text-white font-semibold"
               required
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-slate-900 dark:bg-white text-white dark:text-black px-8 py-3 rounded-full font-sans text-sm tracking-widest uppercase font-bold hover:bg-gold-500 dark:hover:bg-gold-500 dark:hover:text-white transition-colors flex-shrink-0 disabled:opacity-50 shadow-md"
+              className="bg-[#F46261] hover:bg-gold-500 dark:bg-white text-white dark:text-black px-8 py-3 rounded-full font-sans text-sm tracking-widest uppercase font-bold dark:hover:bg-gold-500 dark:hover:text-white transition-colors flex-shrink-0 disabled:opacity-50 shadow-md"
             >
               {loading ? 'Buscando...' : 'Rastrear'}
             </button>
@@ -125,14 +125,14 @@ export default function TrackClient() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2.5rem] p-8 sm:p-12 border border-slate-200 dark:border-white/10 shadow-2xl relative overflow-hidden"
+              className="bg-[var(--luxury-cream)] dark:bg-[#1A1A1A]/60 backdrop-blur-md rounded-[2.5rem] p-8 sm:p-12 border border-[var(--luxury-rose)]/20 dark:border-white/10 shadow-2xl relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 p-8 opacity-5 dark:opacity-10 pointer-events-none">
                  <Package size={200} />
               </div>
 
               {/* Order Info Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 dark:border-white/10 pb-8 mb-10 gap-6 relative z-10">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[var(--luxury-rose)]/20 dark:border-white/10 pb-8 mb-10 gap-6 relative z-10">
                 <div>
                   <h2 className="font-sans text-sm tracking-widest text-gold-500 font-bold mb-1 uppercase">
                     ORDEN ENCONTRADA
@@ -144,7 +144,7 @@ export default function TrackClient() {
                     A nombre de: <span className="font-medium text-luxury-black">{trackingData.clientName}</span>
                   </p>
                 </div>
-                <div className="bg-[var(--background)] px-6 py-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm text-left sm:text-right">
+                <div className="bg-[var(--background)] px-6 py-4 rounded-2xl border border-[var(--luxury-rose)]/25 dark:border-white/10 shadow-sm text-left sm:text-right">
                    <p className="font-sans text-xs tracking-widest text-luxury-black/50 uppercase font-semibold mb-1">
                      Entrega Programada
                    </p>
@@ -162,7 +162,7 @@ export default function TrackClient() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between relative gap-8 sm:gap-0">
                   
                   {/* Background connecting line (Desktop) */}
-                  <div className="hidden sm:block absolute top-6 left-12 right-12 h-1 bg-slate-200 dark:bg-white/10 rounded-full z-0" />
+                  <div className="hidden sm:block absolute top-6 left-12 right-12 h-1 bg-[var(--luxury-rose)]/30 dark:bg-white/10 rounded-full z-0" />
                   
                   {/* Active connecting line (Desktop) */}
                   <motion.div 
@@ -173,7 +173,7 @@ export default function TrackClient() {
                   />
 
                   {/* Background connecting line (Mobile) */}
-                  <div className="sm:hidden absolute top-8 bottom-8 left-6 w-1 bg-slate-200 dark:bg-white/10 rounded-full z-0" />
+                  <div className="sm:hidden absolute top-8 bottom-8 left-6 w-1 bg-[var(--luxury-rose)]/30 dark:bg-white/10 rounded-full z-0" />
                   
                   {/* Active connecting line (Mobile) */}
                   <motion.div 
@@ -198,10 +198,10 @@ export default function TrackClient() {
                           transition={{ delay: index * 0.15 }}
                           className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-4 shadow-md transition-all duration-500 ${
                             isCurrent 
-                              ? 'bg-gold-500 border-white dark:border-[#1A1A1A] text-white shadow-[0_0_20px_rgba(212,175,55,0.4)] scale-110' 
+                              ? 'bg-gold-500 border-[var(--luxury-cream)] dark:border-[#1A1A1A] text-white shadow-[0_0_20px_rgba(212,175,55,0.4)] scale-110' 
                               : isCompleted 
-                                ? 'bg-gold-400 border-white dark:border-[#1A1A1A] text-white' 
-                                : 'bg-slate-100 dark:bg-[#2A2A2A] border-white dark:border-[#1A1A1A] text-slate-400 dark:text-slate-500'
+                                ? 'bg-gold-400 border-[var(--luxury-cream)] dark:border-[#1A1A1A] text-white' 
+                                : 'bg-[var(--luxury-cream)] dark:bg-[#2A2A2A] border-[var(--luxury-cream)] dark:border-[#1A1A1A] text-luxury-black/40 dark:text-slate-500'
                           }`}
                         >
                           <Icon size={20} className={isCurrent ? 'animate-pulse' : ''} />

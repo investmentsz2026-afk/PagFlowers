@@ -78,7 +78,7 @@ export default function ProductDetailClient({
       <div>
         <Link
           href="/catalog"
-          className="inline-flex items-center gap-1.5 font-sans text-xs tracking-widest uppercase text-luxury-black/60 hover:text-gold-500 font-semibold transition-colors"
+          className="inline-flex items-center gap-1.5 font-sans text-xs tracking-widest uppercase text-luxury-black/60 hover:text-[#F46261] font-semibold transition-colors"
         >
           <ArrowLeft size={14} /> Volver al Catálogo
         </Link>
@@ -103,7 +103,7 @@ export default function ProductDetailClient({
                   key={idx}
                   onClick={() => setActiveImageIdx(idx)}
                   className={`w-20 h-20 rounded-lg overflow-hidden bg-[var(--background)] border transition-all ${
-                    activeImageIdx === idx ? 'border-gold-500 ring-2 ring-gold-400/10 scale-105' : 'border-gold-400/15 opacity-70 hover:opacity-100'
+                    activeImageIdx === idx ? 'border-[#F46261] ring-2 ring-[#F46261]/20 scale-105' : 'border-neutral-200 dark:border-neutral-800 opacity-70 hover:opacity-100 hover:border-[#F46261]/50'
                   }`}
                 >
                   <img src={img} alt={`Imagen ${idx + 1}`} className="w-full h-full object-cover" />
@@ -117,11 +117,11 @@ export default function ProductDetailClient({
         <div className="lg:col-span-5 space-y-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="font-sans text-[10px] tracking-widest uppercase font-bold text-gold-600">
+              <span className="font-sans text-[10px] tracking-widest uppercase font-bold text-[#F46261]">
                 {product.category}
               </span>
               {product.isExclusive && (
-                <span className="bg-luxury-black text-gold-300 font-sans text-[8px] uppercase font-bold tracking-widest py-0.5 px-2 rounded">
+                <span className="bg-luxury-black text-white font-sans text-[8px] uppercase font-bold tracking-widest py-0.5 px-2 rounded">
                   Exclusivo
                 </span>
               )}
@@ -132,15 +132,15 @@ export default function ProductDetailClient({
             <div className="flex items-center gap-3">
               {product.salePrice !== null ? (
                 <>
-                  <span className="font-serif text-2xl text-luxury-black font-bold">
+                  <span className="font-serif text-3xl text-red-600 font-bold">
                     S/ {product.salePrice.toFixed(2)}
                   </span>
-                  <span className="font-sans text-sm line-through text-luxury-black/30">
+                  <span className="font-sans text-sm line-through text-luxury-black/40">
                     S/ {product.price.toFixed(2)}
                   </span>
                 </>
               ) : (
-                <span className="font-serif text-2xl text-luxury-black font-bold">
+                <span className="font-serif text-3xl text-[#F46261] font-bold">
                   S/ {product.price.toFixed(2)}
                 </span>
               )}
@@ -156,12 +156,12 @@ export default function ProductDetailClient({
             </div>
           </div>
 
-          <hr className="border-gold-400/10" />
+          <hr className="border-neutral-200 dark:border-white/10" />
 
           {/* DEDICATORIA CARD CUSTOMIZER (Premium UI Feature) */}
           <div className="space-y-4">
             <h3 className="font-serif text-sm tracking-widest text-luxury-black uppercase font-bold flex items-center gap-1.5">
-              <Sparkles size={16} className="text-gold-500" /> Personaliza tu Dedicatoria
+              <Sparkles size={16} className="text-[#F46261]" /> Personaliza tu Dedicatoria
             </h3>
             <p className="font-sans text-[10px] text-luxury-black/50">
               Incluye un mensaje especial en una tarjeta exclusiva sellada artesanalmente sin costo adicional.
@@ -174,7 +174,7 @@ export default function ProductDetailClient({
                   key={tmpl.id}
                   onClick={() => setCardStyle(tmpl.id)}
                   className={`px-3 py-2 text-[10px] font-semibold tracking-widest uppercase border rounded transition-all cursor-pointer ${
-                    cardStyle === tmpl.id ? 'border-gold-500 bg-gold-50 text-gold-700' : 'border-gold-400/20 hover:border-gold-400'
+                    cardStyle === tmpl.id ? 'border-[#F46261] bg-[#F46261]/10 text-[#F46261]' : 'border-neutral-200 hover:border-[#F46261]/50'
                   }`}
                 >
                   {tmpl.name}
@@ -184,38 +184,38 @@ export default function ProductDetailClient({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-sans text-[9px] uppercase tracking-wider text-luxury-black/50 block font-semibold">De:</label>
+                <label className="font-sans text-[9px] uppercase tracking-wider text-[#111111] block font-bold">De:</label>
                 <input
                   type="text"
                   placeholder="Tu Nombre / Anónimo"
                   value={cardSender}
                   onChange={(e) => setCardSender(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/35 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400"
+                  className="w-full text-xs p-2.5 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                 />
               </div>
               <div className="space-y-1">
-                <label className="font-sans text-[9px] uppercase tracking-wider text-luxury-black/50 block font-semibold">Para:</label>
+                <label className="font-sans text-[9px] uppercase tracking-wider text-[#111111] block font-bold">Para:</label>
                 <input
                   type="text"
                   placeholder="Nombre de Recipiente"
                   value={cardRecipient}
                   onChange={(e) => setCardRecipient(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/35 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400"
+                  className="w-full text-xs p-2.5 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="font-sans text-[9px] uppercase tracking-wider text-luxury-black/50 block font-semibold">Dedicatoria (Mensaje):</label>
+              <label className="font-sans text-[9px] uppercase tracking-wider text-[#111111] block font-bold">Dedicatoria (Mensaje):</label>
               <textarea
                 rows={3}
                 maxLength={300}
                 placeholder="Escribe tu dedicatoria..."
                 value={cardMessage}
                 onChange={(e) => setCardMessage(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/35 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400 resize-none"
+                className="w-full text-xs p-2.5 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all resize-none"
               />
-              <span className="text-[9px] text-right block text-luxury-black/40">
+              <span className="text-[9px] text-right block text-[#111111]/70 font-semibold">
                 {cardMessage.length}/300 caracteres
               </span>
             </div>
@@ -238,16 +238,16 @@ export default function ProductDetailClient({
             )}
           </div>
 
-          <hr className="border-gold-400/10" />
+          <hr className="border-neutral-200 dark:border-white/10" />
 
           {/* Action Row */}
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
             {/* Quantity Selector */}
-            <div className="flex items-center justify-between border border-gold-400/30 rounded-lg p-1 bg-[var(--background)] sm:w-32">
+            <div className="flex items-center justify-between border border-neutral-200 rounded-lg p-1 bg-[var(--background)] sm:w-32">
               <button
                 disabled={quantity <= 1 || isOutOfStock}
                 onClick={() => setQuantity((q) => q - 1)}
-                className="w-10 py-2 text-sm text-luxury-black disabled:opacity-30 disabled:cursor-not-allowed hover:text-gold-500 transition-colors cursor-pointer"
+                className="w-10 py-2 text-sm text-luxury-black disabled:opacity-30 disabled:cursor-not-allowed hover:text-[#F46261] transition-colors cursor-pointer"
               >
                 -
               </button>
@@ -255,7 +255,7 @@ export default function ProductDetailClient({
               <button
                 disabled={quantity >= product.stock || isOutOfStock}
                 onClick={() => setQuantity((q) => q + 1)}
-                className="w-10 py-2 text-sm text-luxury-black disabled:opacity-30 disabled:cursor-not-allowed hover:text-gold-500 transition-colors cursor-pointer"
+                className="w-10 py-2 text-sm text-luxury-black disabled:opacity-30 disabled:cursor-not-allowed hover:text-[#F46261] transition-colors cursor-pointer"
               >
                 +
               </button>
@@ -270,7 +270,7 @@ export default function ProductDetailClient({
                   ? 'bg-green-600 text-white hover:bg-green-700 hover:scale-100'
                   : isOutOfStock
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#111111] text-white hover:bg-gold-500 hover:text-white active:scale-95'
+                  : 'bg-gradient-to-r from-[#F46261] to-[#FF8C8C] text-white hover:shadow-xl hover:scale-[1.02] active:scale-95'
               }`}
             >
               {isAdded ? (
@@ -303,7 +303,7 @@ export default function ProductDetailClient({
               const hasOffer = prod.salePrice !== null;
               return (
                 <div key={prod.id} className="group flex flex-col border border-gold-400/10 rounded-2xl overflow-hidden hover:shadow-xl transition-shadow bg-[var(--background)]">
-                  <div className="relative aspect-square overflow-hidden bg-neutral-100">
+                  <div className="relative aspect-square overflow-hidden bg-[var(--luxury-cream)]">
                     <img
                       src={prod.images[0]}
                       alt={prod.name}

@@ -11,6 +11,7 @@ interface Product {
   description: string;
   price: number;
   salePrice: number | null;
+  saleDescription: string | null;
   images: string[];
   stock: number;
   category: string;
@@ -24,9 +25,11 @@ import MagicRings from '@/components/ui/MagicRings';
 export default function CatalogClient({
   initialProducts,
   initialCategory = 'TODOS',
+  dbCategories = [],
 }: {
   initialProducts: Product[];
   initialCategory?: string;
+  dbCategories?: any[];
 }) {
   const [products] = useState<Product[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -36,16 +39,21 @@ export default function CatalogClient({
 
   // Unique categories list
   const categories = useMemo(() => {
+    if (dbCategories && dbCategories.length > 0) {
+      return ['TODOS', 'OFERTAS', ...dbCategories.map(cat => cat.name)];
+    }
     const list = new Set(products.map((p) => p.category));
-    return ['TODOS', ...Array.from(list)];
-  }, [products]);
+    return ['TODOS', 'OFERTAS', ...Array.from(list)];
+  }, [products, dbCategories]);
 
   // Filtered and sorted products
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
     // Filter by Category
-    if (selectedCategory !== 'TODOS') {
+    if (selectedCategory === 'OFERTAS') {
+      result = result.filter(p => p.salePrice !== null);
+    } else if (selectedCategory !== 'TODOS') {
       result = result.filter((p) => p.category === selectedCategory);
     }
 
@@ -82,6 +90,100 @@ export default function CatalogClient({
 
     return result;
   }, [products, selectedCategory, searchQuery, sortBy]);
+
+  const renderProductCard = (prod: Product) => {
+    const hasOffer = prod.salePrice !== null;
+    const isOutOfStock = prod.stock <= 0;
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3 }}
+        key={prod.id}
+        className="group flex flex-col border border-gold-400/10 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 bg-[var(--luxury-cream)]/90 backdrop-blur-md"
+      >
+        {/* Image Box */}
+        <div className="relative aspect-square overflow-hidden bg-[var(--luxury-cream)]/50">
+          <img
+            src={prod.images[0]}
+            alt={prod.name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          {/* Tag badges */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+            {prod.isExclusive && (
+              <span className="bg-luxury-black text-gold-300 font-sans text-[8px] uppercase font-bold tracking-widest py-1.5 px-2.5 rounded shadow">
+                Exclusivo
+              </span>
+            )}
+            {hasOffer && (
+              <span className="bg-red-600 text-white font-sans text-[8px] uppercase font-bold tracking-widest py-1.5 px-2.5 rounded shadow">
+                Oferta
+              </span>
+            )}
+            {isOutOfStock && (
+              <span className="bg-luxury-gray text-white font-sans text-[8px] uppercase font-bold tracking-widest py-1.5 px-2.5 rounded shadow">
+                Agotado
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Content Box */}
+        <div className="p-3 sm:p-5 flex-grow flex flex-col justify-between space-y-2 sm:space-y-4">
+          <div className="space-y-1 sm:space-y-2">
+            <span className="font-sans text-[8px] sm:text-[9px] tracking-wider uppercase text-gold-600 font-bold block line-clamp-1">
+              {prod.category}
+            </span>
+            <h2 className="font-serif text-xs sm:text-base text-luxury-black font-semibold leading-snug line-clamp-2 sm:line-clamp-1 group-hover:text-gold-500 transition-colors">
+              {prod.name}
+            </h2>
+            {prod.saleDescription ? (
+              <p className="font-sans text-[9px] sm:text-xs text-red-500 line-clamp-1 sm:line-clamp-2 leading-relaxed font-semibold hidden sm:block bg-red-500/10 px-2 py-1 rounded inline-block">
+                {prod.saleDescription}
+              </p>
+            ) : (
+              <p className="font-sans text-[9px] sm:text-xs text-luxury-black/50 line-clamp-1 sm:line-clamp-2 leading-relaxed font-light hidden sm:block">
+                {prod.description}
+              </p>
+            )}
+          </div>
+
+          {/* Pricing and Action */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 sm:pt-4 border-t border-gold-400/5 gap-2 sm:gap-0">
+            <div className="flex flex-col">
+              {hasOffer ? (
+                <>
+                  <span className="font-serif text-sm sm:text-base text-red-600 font-bold">
+                    S/ {prod.salePrice!.toFixed(2)}
+                  </span>
+                  <span className="font-sans text-[8px] sm:text-[10px] line-through text-luxury-black/40">
+                    S/ {prod.price.toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span className="font-serif text-sm sm:text-base text-luxury-black font-bold">
+                  S/ {prod.price.toFixed(2)}
+                </span>
+              )}
+            </div>
+            <Link
+              href={`/product/${prod.id}`}
+              className={`px-2 py-1.5 sm:px-3 sm:py-2 border rounded font-sans text-[9px] sm:text-xs uppercase tracking-widest font-semibold transition-all duration-300 text-center ${
+                isOutOfStock
+                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'border-gold-400/30 text-luxury-black hover:bg-gold-400 hover:border-gold-400 hover:text-luxury-black'
+              }`}
+            >
+              {isOutOfStock ? 'Agotado' : 'Comprar'}
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="w-full">
@@ -143,37 +245,37 @@ export default function CatalogClient({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-8">
 
       {/* 2. Search & Controls Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-white/70 dark:bg-[#1A1A1A]/60 backdrop-blur-xl p-4 rounded-3xl border border-white/80 dark:border-white/20 shadow-lg">
+      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-[var(--luxury-cream)]/80 dark:bg-[#1A1A1A]/60 backdrop-blur-xl p-4 rounded-3xl border border-[var(--luxury-rose)]/30 dark:border-white/20 shadow-lg">
         {/* Search */}
-        <div className="flex-1 flex items-center border border-slate-300 dark:border-white/20 rounded-2xl px-4 py-2.5 bg-white dark:bg-black/60 shadow-sm transition-all focus-within:border-gold-500 focus-within:ring-1 focus-within:ring-gold-500">
-          <Search size={18} className="text-slate-500 mr-2" />
+        <div className="flex-1 flex items-center border border-[#2B1210]/35 dark:border-white/20 rounded-2xl px-4 py-2.5 bg-white/80 dark:bg-black/60 shadow-sm transition-all focus-within:border-gold-500 focus-within:ring-1 focus-within:ring-gold-500">
+          <Search size={18} className="text-[#111111]/70 dark:text-slate-400 mr-2" />
           <input
             type="text"
             placeholder="Buscar por nombre, tipo de flor, ocasión..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent border-none outline-none font-sans text-sm py-1 placeholder:text-slate-400 text-slate-900 dark:text-white font-medium"
+            className="w-full bg-transparent border-none outline-none font-sans text-sm py-1 placeholder:text-[#2B1210]/55 dark:placeholder:text-slate-400 text-[#111111] dark:text-white font-semibold"
           />
         </div>
 
         {/* Filters and Sorting */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 border border-slate-300 dark:border-white/20 rounded-2xl px-4 py-2.5 bg-white dark:bg-black/60 shadow-sm text-xs font-sans text-slate-900 dark:text-white/90 font-medium transition-colors hover:border-gold-400">
+          <div className="flex items-center gap-2 border border-[#2B1210]/35 dark:border-white/20 rounded-2xl px-4 py-2.5 bg-white/80 dark:bg-black/60 shadow-sm text-xs font-sans text-[#111111] dark:text-white/90 font-bold transition-colors hover:border-gold-400">
             <ArrowUpDown size={14} className="text-gold-500" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent border-none outline-none focus:ring-0 font-medium cursor-pointer text-slate-900 dark:text-white"
+              className="bg-transparent border-none outline-none focus:ring-0 font-bold cursor-pointer text-[#111111] dark:text-white"
             >
-              <option className="bg-white dark:bg-[var(--background)]" value="newest">Últimos Diseños</option>
-              <option className="bg-white dark:bg-[var(--background)]" value="price-asc">Precio: Menor a Mayor</option>
-              <option className="bg-white dark:bg-[var(--background)]" value="price-desc">Precio: Mayor a Menor</option>
-              <option className="bg-white dark:bg-[var(--background)]" value="stock-desc">Mayor Disponibilidad</option>
+              <option className="bg-[var(--luxury-cream)] dark:bg-[var(--background)]" value="newest">Últimos Diseños</option>
+              <option className="bg-[var(--luxury-cream)] dark:bg-[var(--background)]" value="price-asc">Precio: Menor a Mayor</option>
+              <option className="bg-[var(--luxury-cream)] dark:bg-[var(--background)]" value="price-desc">Precio: Mayor a Menor</option>
+              <option className="bg-[var(--luxury-cream)] dark:bg-[var(--background)]" value="stock-desc">Mayor Disponibilidad</option>
             </select>
           </div>
 
           {/* Grid columns toggle */}
-          <div className="hidden lg:flex border border-slate-300 dark:border-white/20 rounded-2xl p-1.5 bg-white dark:bg-black/60 shadow-sm">
+          <div className="hidden lg:flex border border-[var(--luxury-rose)]/30 dark:border-white/20 rounded-2xl p-1.5 bg-[var(--luxury-cream)] dark:bg-black/60 shadow-sm">
             <button
               onClick={() => setViewCols(3)}
               className={`p-1.5 rounded transition-colors ${viewCols === 3 ? 'bg-gold-500 text-white' : 'text-slate-500 hover:text-slate-900 dark:text-white/60 dark:hover:text-white'}`}
@@ -192,21 +294,30 @@ export default function CatalogClient({
         </div>
       </div>
 
-      {/* 3. Category Pills Slider */}
-      <div className="flex overflow-x-auto pb-2 gap-2 scrollbar-none">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-6 py-2.5 rounded-full font-sans text-xs tracking-widest uppercase font-semibold border transition-all duration-300 flex-shrink-0 cursor-pointer ${
-              selectedCategory === cat
-                ? 'bg-gold-500 border-gold-500 text-white shadow-[0_5px_15px_rgba(212,175,55,0.4)] scale-105'
-                : 'bg-white/50 dark:bg-[#1A1A1A]/50 backdrop-blur-sm border-white/60 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-white/90 dark:hover:bg-[#1A1A1A]/80 shadow-sm hover:shadow-md'
-            }`}
-          >
-            {cat === 'TODOS' ? 'Todos los Productos' : cat}
-          </button>
-        ))}
+      {/* 3. Category Pills Slider (Modernized) */}
+      <div className="relative w-full mb-8">
+        <div className="flex flex-nowrap md:flex-wrap md:justify-center overflow-x-auto md:overflow-visible pb-4 gap-3 scrollbar-none snap-x md:snap-none px-1">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`snap-start relative px-6 py-3 rounded-full font-sans text-xs tracking-widest uppercase font-semibold transition-all duration-500 flex-shrink-0 cursor-pointer overflow-hidden ${
+                selectedCategory === cat
+                  ? 'text-white shadow-lg scale-105 border-transparent'
+                  : 'bg-[var(--luxury-cream)]/70 dark:bg-[#1A1A1A]/60 backdrop-blur-md border border-[var(--luxury-rose)]/20 dark:border-white/10 text-luxury-black/70 dark:text-white/60 hover:bg-[var(--luxury-cream)] dark:hover:bg-[#2A2A2A] hover:border-[#F46261]/50 hover:text-[#F46261] dark:hover:text-[#F46261] shadow-sm hover:shadow-md'
+              }`}
+            >
+              {selectedCategory === cat && (
+                <motion.div
+                  layoutId="activeCategory"
+                  className="absolute inset-0 bg-gradient-to-r from-[#F46261] to-[#FF8C8C] z-0"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{cat === 'TODOS' ? 'Todos los Productos' : cat}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 4. Products grid */}
@@ -228,102 +339,65 @@ export default function CatalogClient({
             </button>
           </div>
         ) : (
-          <motion.div
-            layout
-            className={`grid grid-cols-2 sm:grid-cols-2 ${
-              viewCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
-            } gap-3 sm:gap-8`}
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredProducts.map((prod) => {
-                const hasOffer = prod.salePrice !== null;
-                const isOutOfStock = prod.stock <= 0;
-                return (
+          <div className="space-y-12 sm:space-y-16">
+            {/* Special Offers Section */}
+            {(selectedCategory === 'TODOS' || selectedCategory === 'OFERTAS') && filteredProducts.some(p => p.salePrice !== null) && (
+              <div className="space-y-6">
+                <div className="text-left border-b border-red-500/20 pb-4 mb-4 pl-4 bg-red-500/5 rounded-xl border border-red-500/10 shadow-lg relative overflow-hidden pt-4">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                  <h2 className="font-serif text-2xl sm:text-3xl text-red-500 font-bold flex items-center gap-2">
+                    <span className="animate-pulse">🔥</span> OFERTAS ESPECIALES
+                  </h2>
+                  <p className="font-sans text-xs sm:text-sm text-red-400 font-semibold mt-1 tracking-wider uppercase">
+                    Promociones exclusivas por tiempo limitado.
+                  </p>
+                </div>
+                <motion.div
+                  layout
+                  className={`grid grid-cols-2 sm:grid-cols-2 ${
+                    viewCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
+                  } gap-3 sm:gap-8`}
+                >
+                  <AnimatePresence mode="popLayout">
+                    {filteredProducts.filter(p => p.salePrice !== null).map((prod) => renderProductCard(prod))}
+                  </AnimatePresence>
+                </motion.div>
+              </div>
+            )}
+
+            {/* Category Sections */}
+            {(selectedCategory === 'TODOS' ? categories.filter(c => c !== 'TODOS' && c !== 'OFERTAS') : [selectedCategory]).map(cat => {
+              if (cat === 'OFERTAS') return null; // Already rendered above
+              
+              const catProducts = selectedCategory === 'TODOS' 
+                ? filteredProducts.filter(p => p.category === cat && p.salePrice === null) 
+                : filteredProducts;
+                
+              if (catProducts.length === 0) return null;
+              
+              const catObj = dbCategories?.find(d => d.name === cat);
+              const description = catObj?.description || `Colección exclusiva de arreglos florales para ${cat.toLowerCase()}.`;
+              
+              return (
+                <div key={cat} className="space-y-6">
+                  <div className="text-left border-b border-gold-800/10 pb-2 mb-4 pl-2">
+                    <h2 className="font-serif text-2xl sm:text-3xl text-luxury-black font-semibold">{cat}</h2>
+                    <p className="font-sans text-xs sm:text-sm text-[#F46261] font-semibold mt-1 tracking-wider uppercase">{description}</p>
+                  </div>
                   <motion.div
                     layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3 }}
-                    key={prod.id}
-                    className="group flex flex-col border border-gold-400/10 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 bg-[var(--background)]"
+                    className={`grid grid-cols-2 sm:grid-cols-2 ${
+                      viewCols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
+                    } gap-3 sm:gap-8`}
                   >
-                    {/* Image Box */}
-                    <div className="relative aspect-square overflow-hidden bg-neutral-100">
-                      <img
-                        src={prod.images[0]}
-                        alt={prod.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      {/* Tag badges */}
-                      <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
-                        {prod.isExclusive && (
-                          <span className="bg-luxury-black text-gold-300 font-sans text-[8px] uppercase font-bold tracking-widest py-1.5 px-2.5 rounded shadow">
-                            Exclusivo
-                          </span>
-                        )}
-                        {hasOffer && (
-                          <span className="bg-red-600 text-white font-sans text-[8px] uppercase font-bold tracking-widest py-1.5 px-2.5 rounded shadow">
-                            Oferta
-                          </span>
-                        )}
-                        {isOutOfStock && (
-                          <span className="bg-luxury-gray text-white font-sans text-[8px] uppercase font-bold tracking-widest py-1.5 px-2.5 rounded shadow">
-                            Agotado
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content Box */}
-                    <div className="p-3 sm:p-5 flex-grow flex flex-col justify-between space-y-2 sm:space-y-4">
-                      <div className="space-y-1 sm:space-y-2">
-                        <span className="font-sans text-[8px] sm:text-[9px] tracking-wider uppercase text-gold-600 font-bold block line-clamp-1">
-                          {prod.category}
-                        </span>
-                        <h2 className="font-serif text-xs sm:text-base text-luxury-black font-semibold leading-snug line-clamp-2 sm:line-clamp-1 group-hover:text-gold-500 transition-colors">
-                          {prod.name}
-                        </h2>
-                        <p className="font-sans text-[9px] sm:text-xs text-luxury-black/50 line-clamp-1 sm:line-clamp-2 leading-relaxed font-light hidden sm:block">
-                          {prod.description}
-                        </p>
-                      </div>
-
-                      {/* Pricing and Action */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 sm:pt-4 border-t border-gold-400/5 gap-2 sm:gap-0">
-                        <div className="flex flex-col">
-                          {hasOffer ? (
-                            <>
-                              <span className="font-serif text-sm sm:text-base text-luxury-black font-bold">
-                                S/ {prod.salePrice!.toFixed(2)}
-                              </span>
-                              <span className="font-sans text-[8px] sm:text-[10px] line-through text-luxury-black/30">
-                                S/ {prod.price.toFixed(2)}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="font-serif text-sm sm:text-base text-luxury-black font-bold">
-                              S/ {prod.price.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                        <Link
-                          href={`/product/${prod.id}`}
-                          className={`px-2 py-1.5 sm:px-3 sm:py-2 border rounded font-sans text-[9px] sm:text-xs uppercase tracking-widest font-semibold transition-all duration-300 text-center ${
-                            isOutOfStock
-                              ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                              : 'border-gold-400/30 text-luxury-black hover:bg-gold-400 hover:border-gold-400 hover:text-luxury-black'
-                          }`}
-                        >
-                          {isOutOfStock ? 'Agotado' : 'Comprar'}
-                        </Link>
-                      </div>
-                    </div>
+                    <AnimatePresence mode="popLayout">
+                      {catProducts.map((prod) => renderProductCard(prod))}
+                    </AnimatePresence>
                   </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

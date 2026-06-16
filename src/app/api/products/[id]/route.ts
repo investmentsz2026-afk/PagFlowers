@@ -57,6 +57,7 @@ export async function PUT(
       description,
       price,
       salePrice,
+      saleDescription,
       images,
       stock,
       category,
@@ -73,20 +74,22 @@ export async function PUT(
       return NextResponse.json({ message: 'Producto no encontrado.' }, { status: 404 });
     }
 
+    const dataToUpdate: any = {};
+    if (name !== undefined) dataToUpdate.name = name;
+    if (description !== undefined) dataToUpdate.description = description;
+    if (price !== undefined) dataToUpdate.price = parseFloat(price);
+    if (salePrice !== undefined) dataToUpdate.salePrice = salePrice ? parseFloat(salePrice) : null;
+    if (saleDescription !== undefined) dataToUpdate.saleDescription = saleDescription || null;
+    if (images !== undefined) dataToUpdate.images = images;
+    if (stock !== undefined) dataToUpdate.stock = parseInt(stock);
+    if (category !== undefined) dataToUpdate.category = category;
+    if (tags !== undefined) dataToUpdate.tags = tags;
+    if (isExclusive !== undefined) dataToUpdate.isExclusive = !!isExclusive;
+    if (isFeatured !== undefined) dataToUpdate.isFeatured = !!isFeatured;
+
     const updatedProduct = await prisma.product.update({
       where: { id: productId },
-      data: {
-        name: name !== undefined ? name : existingProduct.name,
-        description: description !== undefined ? description : existingProduct.description,
-        price: price !== undefined ? parseFloat(price) : existingProduct.price,
-        salePrice: salePrice !== undefined ? (salePrice ? parseFloat(salePrice) : null) : existingProduct.salePrice,
-        images: images !== undefined ? images : existingProduct.images,
-        stock: stock !== undefined ? parseInt(stock) : existingProduct.stock,
-        category: category !== undefined ? category : existingProduct.category,
-        tags: tags !== undefined ? tags : existingProduct.tags,
-        isExclusive: isExclusive !== undefined ? !!isExclusive : existingProduct.isExclusive,
-        isFeatured: isFeatured !== undefined ? !!isFeatured : existingProduct.isFeatured,
-      },
+      data: dataToUpdate,
     });
 
     return NextResponse.json(updatedProduct);

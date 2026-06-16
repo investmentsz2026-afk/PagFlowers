@@ -90,14 +90,14 @@ export default function TestimonialSlider() {
       <div className="flex justify-center gap-4 mt-8">
         <button
           onClick={handlePrev}
-          className="p-2 border border-gold-400/20 rounded-full hover:bg-gold-100/50 text-luxury-black transition-colors"
+          className="p-2 border border-white/40 dark:border-gold-400/20 rounded-full hover:bg-white/20 dark:hover:bg-gold-100/50 text-white dark:text-luxury-black transition-colors"
           aria-label="Testimonio anterior"
         >
           <ChevronLeft size={16} />
         </button>
         <button
           onClick={handleNext}
-          className="p-2 border border-gold-400/20 rounded-full hover:bg-gold-100/50 text-luxury-black transition-colors"
+          className="p-2 border border-white/40 dark:border-gold-400/20 rounded-full hover:bg-white/20 dark:hover:bg-gold-100/50 text-white dark:text-luxury-black transition-colors"
           aria-label="Siguiente testimonio"
         >
           <ChevronRight size={16} />

@@ -9,6 +9,7 @@ interface Product {
   description: string;
   price: number;
   salePrice: number | null;
+  saleDescription: string | null;
   images: string[];
   stock: number;
   category: string;
@@ -19,6 +20,7 @@ interface Product {
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<{name: string, slug: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +30,9 @@ export default function AdminProductsPage() {
     name: '',
     description: '',
     price: '',
+    isSaleActive: false,
     salePrice: '',
+    saleDescription: '',
     stock: '',
     category: 'Ramos',
     tagsInput: '',
@@ -62,7 +66,23 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     loadProducts();
+    loadCategories();
   }, []);
+
+  const loadCategories = async () => {
+    try {
+      const res = await fetch('/api/categories');
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data);
+        if (data.length > 0 && formData.category === 'Ramos') {
+          setFormData(prev => ({ ...prev, category: data[0].name }));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load categories', e);
+    }
+  };
 
   const handleOpenAddModal = () => {
     setCurrentProduct(null);
@@ -70,7 +90,9 @@ export default function AdminProductsPage() {
       name: '',
       description: '',
       price: '',
+      isSaleActive: false,
       salePrice: '',
+      saleDescription: '',
       stock: '10',
       category: 'Ramos',
       tagsInput: '',
@@ -87,7 +109,9 @@ export default function AdminProductsPage() {
       name: prod.name,
       description: prod.description,
       price: prod.price.toString(),
+      isSaleActive: prod.salePrice !== null,
       salePrice: prod.salePrice ? prod.salePrice.toString() : '',
+      saleDescription: prod.saleDescription || '',
       stock: prod.stock.toString(),
       category: prod.category,
       tagsInput: prod.tags.join(', '),
@@ -372,42 +396,87 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Precio Original (S/) *</label>
-                  <input
-                    required
-                    type="number"
-                    step="0.01"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none"
-                  />
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 py-2 border-b border-gold-800/10">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isSaleActive}
+                      onChange={(e) => {
+                        const active = e.target.checked;
+                        setFormData({ 
+                          ...formData, 
+                          isSaleActive: active,
+                          salePrice: active ? formData.salePrice : '',
+                          saleDescription: active ? formData.saleDescription : ''
+                        });
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                    <span className="ml-3 text-xs font-bold text-neutral-300 uppercase tracking-widest">
+                      Activar Oferta Especial
+                    </span>
+                  </label>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Precio de Oferta (S/)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="salePrice"
-                    value={formData.salePrice}
-                    onChange={handleInputChange}
-                    placeholder="Ninguna"
-                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none"
-                  />
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Precio Regular (S/) *</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none"
+                    />
+                  </div>
+                  
+                  {formData.isSaleActive && (
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider text-red-400 block font-bold">Precio de Oferta (S/) *</label>
+                      <input
+                        required
+                        type="number"
+                        step="0.01"
+                        name="salePrice"
+                        value={formData.salePrice}
+                        onChange={handleInputChange}
+                        placeholder="Ej. 199.90"
+                        className="w-full p-2.5 rounded border border-red-500/50 bg-red-500/10 text-white outline-none focus:border-red-500"
+                      />
+                    </div>
+                  )}
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Stock Disponible *</label>
+                    <input
+                      required
+                      type="number"
+                      name="stock"
+                      value={formData.stock}
+                      onChange={handleInputChange}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Stock Disponible *</label>
-                  <input
-                    required
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleInputChange}
-                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none"
-                  />
-                </div>
+
+                {formData.isSaleActive && (
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-red-400 block font-bold">Descripción de la Oferta *</label>
+                    <input
+                      required
+                      type="text"
+                      name="saleDescription"
+                      value={formData.saleDescription}
+                      onChange={handleInputChange}
+                      placeholder="Ej. 50% de descuento por 24 horas"
+                      className="w-full p-2.5 rounded border border-red-500/50 bg-red-500/10 text-white placeholder:text-red-400/50 outline-none focus:border-red-500"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -419,10 +488,10 @@ export default function AdminProductsPage() {
                     onChange={handleInputChange}
                     className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none"
                   >
-                    <option value="Ramos">Ramos</option>
-                    <option value="Cajas de Lujo">Cajas de Lujo</option>
-                    <option value="Orquídeas">Orquídeas</option>
-                    <option value="Detalles Especiales">Detalles Especiales</option>
+                    {categories.length === 0 && <option value="Ramos">Ramos</option>}
+                    {categories.map(cat => (
+                      <option key={cat.slug} value={cat.name}>{cat.name}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="space-y-1">

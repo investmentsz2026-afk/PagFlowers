@@ -192,39 +192,39 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Nombre Completo *</label>
+                    <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Nombre Completo *</label>
                     <input
                       required
                       type="text"
                       name="clientName"
                       value={formData.clientName}
                       onChange={handleInputChange}
-                      className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/30 outline-none focus:border-gold-500"
+                      className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                       placeholder="Ej. Juan Pérez"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Teléfono / WhatsApp *</label>
+                    <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Teléfono / WhatsApp *</label>
                     <input
                       required
                       type="tel"
                       name="clientPhone"
                       value={formData.clientPhone}
                       onChange={handleInputChange}
-                      className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/30 outline-none focus:border-gold-500"
+                      className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                       placeholder="Ej. 999999999"
                     />
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Correo Electrónico *</label>
+                  <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Correo Electrónico *</label>
                   <input
                     required
                     type="email"
                     name="clientEmail"
                     value={formData.clientEmail}
                     onChange={handleInputChange}
-                    className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/30 outline-none focus:border-gold-500"
+                    className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                     placeholder="Ej. juan.perez@correo.com"
                   />
                 </div>
@@ -237,13 +237,13 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Distrito de Destino *</label>
+                    <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Distrito de Destino *</label>
                     <select
                       required
                       name="deliveryDistrict"
                       value={deliveryDistrict}
                       onChange={handleInputChange}
-                      className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black outline-none focus:border-gold-500"
+                      className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                     >
                       <option value="">Seleccione Distrito...</option>
                       {districts.map((d) => (
@@ -254,21 +254,21 @@ export default function CheckoutPage() {
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Dirección Exacta de Entrega *</label>
+                    <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Dirección Exacta de Entrega *</label>
                     <input
                       required
                       type="text"
                       name="deliveryAddress"
                       value={formData.deliveryAddress}
                       onChange={handleInputChange}
-                      className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/30 outline-none focus:border-gold-500"
+                      className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                       placeholder="Av. Principal 123, Dpto 402"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Fecha de Entrega *</label>
+                    <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Fecha de Entrega *</label>
                     <input
                       required
                       type="date"
@@ -276,17 +276,17 @@ export default function CheckoutPage() {
                       min={todayStr}
                       value={formData.deliveryDate}
                       onChange={handleInputChange}
-                      className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black outline-none focus:border-gold-500"
+                      className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Horario de Entrega Rango *</label>
+                    <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Horario de Entrega Rango *</label>
                     <select
                       required
                       name="deliveryTime"
                       value={formData.deliveryTime}
                       onChange={handleInputChange}
-                      className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black outline-none focus:border-gold-500"
+                      className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"
                     >
                       <option value="">Seleccione Rango Horario...</option>
                       <option value="9:00 AM - 1:00 PM">Mañana (9:00 AM - 1:00 PM)</option>
@@ -303,14 +303,14 @@ export default function CheckoutPage() {
                   <Sparkles size={16} className="text-gold-500" /> 3. Dedicatoria Global
                 </h2>
                 <div className="space-y-1">
-                  <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/60 font-semibold">Mensaje para la Tarjeta de Regalo (Opcional)</label>
+                  <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Mensaje para la Tarjeta de Regalo (Opcional)</label>
                   <textarea
                     rows={3}
                     name="cardMessage"
                     value={formData.cardMessage}
                     onChange={handleInputChange}
                     placeholder="Escribe el mensaje general que irá en la tarjeta de regalo lacrada (ej. ¡Feliz Aniversario, mi amor!). Si ya lo personalizaste en el producto, puedes dejar este campo vacío."
-                    className="w-full text-xs p-3 rounded-lg border border-gold-400/20 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/30 outline-none focus:border-gold-500 resize-none"
+                    className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all resize-none"
                   />
                 </div>
               </div>
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                       
                       {/* Dynamic Mock QR Code Box */}
                       <div className="flex flex-col items-center justify-center p-4 bg-[var(--background)] border border-gold-400/10 rounded-xl w-48 mx-auto shadow-sm space-y-2">
-                        <div className="w-40 h-40 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center relative border border-dashed border-gold-400/30 rounded">
+                        <div className="w-40 h-40 bg-[var(--luxury-cream)] dark:bg-neutral-800 flex items-center justify-center relative border border-dashed border-gold-400/30 rounded">
                           {/* Inner Mock QR lines rendering */}
                           <QrCode size={96} className="text-luxury-black stroke-[1.2]" />
                           <div className="absolute bottom-2 font-bold text-[8px] tracking-widest text-gold-600 bg-[var(--background)] px-2 py-0.5 shadow-sm rounded-full">

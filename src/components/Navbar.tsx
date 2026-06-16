@@ -15,7 +15,17 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [activePath, setActivePath] = useState('');
   const { scrollY } = useScroll();
+
+  React.useEffect(() => {
+    setActivePath(pathname + window.location.hash);
+    const handleHashChange = () => {
+      setActivePath(window.location.pathname + window.location.hash);
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [pathname]);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
@@ -68,11 +78,14 @@ export default function Navbar() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
               {navLinks.map((link) => {
-                const isActive = pathname === link.path;
+                const isActive = link.path === '/' 
+                  ? (activePath === '/' || activePath === '') 
+                  : activePath === link.path;
                 return (
                   <Link
                     key={link.name}
                     href={link.path}
+                    onClick={() => setActivePath(link.path)}
                     className={`font-sans text-sm tracking-widest uppercase transition-colors hover:text-gold-500 py-2 ${
                       isActive ? 'text-gold-500 font-medium border-b border-gold-400' : 'text-luxury-black/70'
                     }`}
@@ -181,16 +194,26 @@ export default function Navbar() {
               
               {/* Drawer Links */}
               <div className="px-4 pt-6 pb-6 space-y-2 overflow-y-auto flex-1 bg-[var(--background)]">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-4 py-4 font-sans text-sm tracking-widest uppercase text-luxury-black/80 hover:bg-gold-50/50 hover:text-gold-500 rounded-lg transition-all"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive = link.path === '/' 
+                    ? (activePath === '/' || activePath === '') 
+                    : activePath === link.path;
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.path}
+                      onClick={() => {
+                        setActivePath(link.path);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`block px-4 py-4 font-sans text-sm tracking-widest uppercase rounded-lg transition-all ${
+                        isActive ? 'bg-gold-50/50 text-gold-500 font-bold' : 'text-luxury-black/80 hover:bg-gold-50/50 hover:text-gold-500'
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  );
+                })}
                 
                 <div className="pt-6 mt-6 border-t border-gold-400/10">
                   <Link

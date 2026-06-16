@@ -53,10 +53,10 @@ export default function ScrollCarousel({ products }: ScrollCarouselProps) {
   ];
 
   return (
-    <section ref={targetRef} className="relative h-[300vh] bg-blue-950 dark:bg-[#0A0A0A] transition-colors duration-500">
+    <section ref={targetRef} className="relative h-[300vh] bg-[#F46261] dark:bg-[#0A0A0A] transition-colors duration-500">
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         {/* Background gradient overlay */}
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-blue-950/50 via-transparent to-blue-950 dark:from-[#0A0A0A]/50 dark:to-[#0A0A0A] z-10 transition-colors duration-500" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#F46261]/50 via-transparent to-[#F46261] dark:from-[#0A0A0A]/50 dark:to-[#0A0A0A] z-10 transition-colors duration-500" />
         
         {/* Title overlay */}
         <div className="absolute top-24 left-4 sm:left-12 lg:left-24 z-20 pointer-events-none">

@@ -140,7 +140,7 @@ export default function CartPage() {
                   >
                     {/* Column 1: Info (6/12) */}
                     <div className="col-span-1 sm:col-span-6 flex gap-4">
-                      <div className="w-20 h-20 bg-neutral-50 border border-gold-400/10 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-20 h-20 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-lg overflow-hidden flex-shrink-0">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -245,13 +245,13 @@ export default function CartPage() {
 
               {/* Delivery District Select */}
               <div className="space-y-2 pt-2 border-t border-gold-400/5">
-                <label className="text-luxury-black/60 block font-semibold">Distrito de Entrega</label>
-                <div className="flex items-center gap-1.5 border border-gold-400/20 rounded px-2 bg-luxury-cream/10">
-                  <Truck size={14} className="text-gold-500" />
+                <label className="text-[#111111] block font-bold">Distrito de Entrega</label>
+                <div className="flex items-center gap-1.5 border border-[#2B1210]/35 rounded px-2 bg-white/80">
+                  <Truck size={14} className="text-[#111111]/70" />
                   <select
                     value={deliveryDistrict}
                     onChange={handleDistrictChange}
-                    className="w-full bg-transparent border-none py-2 text-xs outline-none focus:ring-0 text-luxury-black"
+                    className="w-full bg-transparent border-none py-2 text-xs outline-none focus:ring-0 text-[#111111] font-bold"
                   >
                     <option className="bg-[var(--background)]" value="">Selecciona Distrito...</option>
                     {districts.map((d) => (
@@ -285,7 +285,7 @@ export default function CartPage() {
                 placeholder="Código de Descuento (ej: PROMO10)"
                 value={couponInput}
                 onChange={(e) => setCouponInput(e.target.value)}
-                className="flex-grow text-xs p-2.5 rounded border border-gold-400/25 bg-[var(--background)] text-luxury-black placeholder:text-luxury-black/30 outline-none uppercase"
+                className="flex-grow text-xs p-2.5 rounded border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none uppercase font-bold"
               />
               <button
                 type="submit"

@@ -39,8 +39,8 @@ export default function DistrictSearch({ districts }: { districts: District[] })
       </div>
 
       <div className="relative">
-        <div className="flex items-center border border-gold-400/30 rounded-xl px-3 py-2 bg-luxury-cream/20 focus-within:border-gold-500 focus-within:ring-2 focus-within:ring-gold-400/10">
-          <Search className="text-luxury-black/40 mr-2 flex-shrink-0" size={18} />
+        <div className="flex items-center border border-[#2B1210]/35 rounded-xl px-3 py-2 bg-white/80 focus-within:border-gold-500 focus-within:ring-2 focus-within:ring-gold-400/10">
+          <Search className="text-[#111111]/60 mr-2 flex-shrink-0" size={18} />
           <input
             type="text"
             placeholder="Buscar distrito (ej. Miraflores, La Molina)..."
@@ -49,12 +49,12 @@ export default function DistrictSearch({ districts }: { districts: District[] })
               setQuery(e.target.value);
               setSelectedDistrict(null);
             }}
-            className="w-full bg-transparent border-none outline-none font-sans text-sm py-1 placeholder:text-luxury-black/30 text-luxury-black"
+            className="w-full bg-transparent border-none outline-none font-sans text-sm py-1 placeholder:text-[#2B1210]/55 text-[#111111] font-semibold"
           />
           {query && (
             <button
               onClick={handleClear}
-              className="text-xs uppercase font-sans text-luxury-black/50 hover:text-gold-500 font-semibold px-2 py-1 cursor-pointer"
+              className="text-xs uppercase font-sans text-[#111111]/70 hover:text-gold-500 font-bold px-2 py-1 cursor-pointer"
             >
               Limpiar
             </button>

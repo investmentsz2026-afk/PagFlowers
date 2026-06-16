@@ -13,6 +13,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   const initialCategory = resolvedParams.category || 'TODOS';
 
   let products: any[] = [];
+  let dbCategories: any[] = [];
   try {
     // Fetch all products from database to feed the client catalog
     products = await prisma.product.findMany({
@@ -20,13 +21,19 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         createdAt: 'desc',
       },
     });
+
+    // Fetch active categories
+    dbCategories = await prisma.category.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+    });
   } catch (error) {
-    console.error('Error fetching catalog products:', error);
+    console.error('Error fetching catalog data:', error);
   }
 
   return (
     <div className="bg-[var(--background)] min-h-screen pb-20">
-      <CatalogClient initialProducts={products} initialCategory={initialCategory} />
+      <CatalogClient initialProducts={products} initialCategory={initialCategory} dbCategories={dbCategories} />
     </div>
   );
 }

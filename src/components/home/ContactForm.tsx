@@ -57,7 +57,7 @@ export default function ContactForm() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-1">
-            <label htmlFor="form-name" className="block text-[10px] uppercase tracking-widest text-luxury-black/60 font-semibold font-sans">
+            <label htmlFor="form-name" className="block text-[10px] uppercase tracking-widest text-[#111111] font-bold font-sans">
               Nombre Completo
             </label>
             <input
@@ -68,12 +68,12 @@ export default function ContactForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ej. Jhosep Silva"
-              className="w-full px-4 py-3 rounded bg-white/70 border border-gold-400/20 text-xs font-sans text-[#111111] placeholder:text-[#111111]/40 focus:outline-none focus:border-gold-500 focus:bg-white transition-all duration-300"
+              className="w-full px-4 py-3 rounded bg-white/80 border border-[#2B1210]/35 text-xs font-sans text-[#111111] placeholder:text-[#2B1210]/55 focus:outline-none focus:border-gold-500 focus:bg-white transition-all duration-300 font-medium"
             />
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="form-email" className="block text-[10px] uppercase tracking-widest text-luxury-black/60 font-semibold font-sans">
+            <label htmlFor="form-email" className="block text-[10px] uppercase tracking-widest text-[#111111] font-bold font-sans">
               Correo Electrónico
             </label>
             <input
@@ -84,12 +84,12 @@ export default function ContactForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Ej. jhosep@correo.com"
-              className="w-full px-4 py-3 rounded bg-white/70 border border-gold-400/20 text-xs font-sans text-[#111111] placeholder:text-[#111111]/40 focus:outline-none focus:border-gold-500 focus:bg-white transition-all duration-300"
+              className="w-full px-4 py-3 rounded bg-white/80 border border-[#2B1210]/35 text-xs font-sans text-[#111111] placeholder:text-[#2B1210]/55 focus:outline-none focus:border-gold-500 focus:bg-white transition-all duration-300 font-medium"
             />
           </div>
 
           <div className="space-y-1">
-            <label htmlFor="form-message" className="block text-[10px] uppercase tracking-widest text-luxury-black/60 font-semibold font-sans">
+            <label htmlFor="form-message" className="block text-[10px] uppercase tracking-widest text-[#111111] font-bold font-sans">
               ¿Cuál es la ocasión o idea floral?
             </label>
             <textarea
@@ -100,7 +100,7 @@ export default function ContactForm() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Cuéntanos qué tienes en mente, la fecha del evento o si necesitas un diseño exclusivo a medida..."
-              className="w-full px-4 py-3 rounded bg-white/70 border border-gold-400/20 text-xs font-sans text-[#111111] placeholder:text-[#111111]/40 focus:outline-none focus:border-gold-500 focus:bg-white transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded bg-white/80 border border-[#2B1210]/35 text-xs font-sans text-[#111111] placeholder:text-[#2B1210]/55 focus:outline-none focus:border-gold-500 focus:bg-white transition-all duration-300 resize-none font-medium"
             />
           </div>
 
