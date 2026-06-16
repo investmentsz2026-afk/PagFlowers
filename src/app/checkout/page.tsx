@@ -397,7 +397,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         <span className="text-[10px] font-bold text-luxury-black">Titular: RossyFlowers SAC</span>
-                        <span className="text-[9px] text-gold-600 font-bold">Cel: 999 999 999</span>
+                        <span className="text-[9px] text-gold-600 font-bold">Cel: 914 060 876</span>
                       </div>
                     </div>
                   )}

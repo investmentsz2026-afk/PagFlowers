@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@mercadopago/sdk-react": "^1.0.7",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
@@ -17,6 +18,7 @@
     "jsonwebtoken": "^9.0.3",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.17.0",
+    "mercadopago": "^3.1.0",
     "next": "16.2.7",
     "pg": "^8.21.0",
     "react": "19.2.4",
