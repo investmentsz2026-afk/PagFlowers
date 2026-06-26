@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Make sure it's an image
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ message: 'El archivo debe ser una imagen.' }, { status: 400 });
+    // Make sure it's an image or a PDF
+    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+      return NextResponse.json({ message: 'El archivo debe ser una imagen o un PDF.' }, { status: 400 });
     }
 
     // Clean filename and add timestamp to avoid collisions

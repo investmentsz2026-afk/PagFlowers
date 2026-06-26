@@ -26,18 +26,32 @@ export default function AdminContentPage() {
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [catalogPdf, setCatalogPdf] = useState('');
 
   // Load config
   useEffect(() => {
     async function loadContent() {
       try {
-        const res = await fetch('/api/content?key=our_story');
-        if (res.ok) {
-          const data = await res.json();
-          setOurStory({ ...DEFAULT_STORY, ...data });
+        const [resStory, resPdf] = await Promise.all([
+          fetch('/api/content?key=our_story'),
+          fetch('/api/content?key=monthly_catalog_pdf')
+        ]);
+        
+        if (resStory.ok) {
+          const data = await resStory.json();
+          if (data && Object.keys(data).length > 0) {
+            setOurStory({ ...DEFAULT_STORY, ...data });
+          }
+        }
+        
+        if (resPdf.ok) {
+          const data = await resPdf.json();
+          if (data && typeof data === 'string') {
+            setCatalogPdf(data);
+          }
         }
       } catch (e) {
-        console.error('Failed to load our_story settings:', e);
+        console.error('Failed to load settings:', e);
       } finally {
         setLoading(false);
       }
@@ -83,6 +97,38 @@ export default function AdminContentPage() {
     }
   };
 
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setCatalogPdf(data.url);
+      } else {
+        const err = await res.json();
+        setError(err.message || 'Error al subir el PDF.');
+      }
+    } catch (err) {
+      setError('Error de conexión al subir el PDF.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -91,24 +137,26 @@ export default function AdminContentPage() {
 
     try {
       const token = localStorage.getItem('admin_token');
-      const res = await fetch('/api/content', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          key: 'our_story',
-          value: ourStory,
+      const reqs = [
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'our_story', value: ourStory }),
         }),
-      });
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'monthly_catalog_pdf', value: catalogPdf }),
+        })
+      ];
 
-      if (res.ok) {
+      const responses = await Promise.all(reqs);
+
+      if (responses.every(r => r.ok)) {
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } else {
-        const err = await res.json();
-        setError(err.message || 'Error al guardar la configuración.');
+        setError('Error al guardar algunas configuraciones.');
       }
     } catch (err) {
       setError('Error de conexión.');
@@ -242,6 +290,57 @@ export default function AdminContentPage() {
                   />
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* PDF Section */}
+          <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
+            <div className="flex items-center gap-2 border-b border-gold-800/10 pb-3">
+              <Sparkles size={16} className="text-gold-400" />
+              <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                Catálogo Mensual (PDF)
+              </h3>
+            </div>
+            
+            <div className="space-y-4">
+              <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Subir nuevo archivo PDF</label>
+              
+              <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-4 relative overflow-hidden group hover:border-gold-400/50 transition-colors">
+                <UploadCloud size={40} className="text-gold-800/40" />
+                
+                <div className="relative z-10 flex flex-col items-center">
+                  <span className="bg-gold-400 text-neutral-950 font-bold text-[10px] uppercase tracking-widest py-2 px-4 rounded-lg cursor-pointer flex items-center gap-2 shadow-lg hover:bg-gold-500 transition-colors">
+                    {uploading ? 'Subiendo...' : 'Cargar Archivo PDF'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePdfUpload}
+                    disabled={uploading}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                  <p className="text-[9px] text-white/50 mt-3 max-w-xs leading-relaxed">
+                    Asegúrate de que el archivo sea un PDF ligero (menos de 5MB) para que cargue rápido en celulares.
+                  </p>
+                </div>
+              </div>
+
+              {catalogPdf && (
+                <div className="space-y-1 text-xs mt-4">
+                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">URL del PDF Actual</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={catalogPdf}
+                      className="flex-grow p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/70 outline-none select-all"
+                    />
+                    <a href={catalogPdf} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-neutral-900 text-white rounded border border-gold-800/20 hover:bg-neutral-800 flex items-center text-[10px] uppercase font-bold tracking-wider">
+                      Ver PDF
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

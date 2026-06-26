@@ -40,7 +40,7 @@ export default function Navbar() {
     { name: 'Inicio', path: '/' },
     { name: 'Catálogo', path: '/catalog' },
     { name: 'Nuestra Historia', path: '/#nosotros' },
-    { name: 'Contacto', path: '/#contacto' },
+    { name: 'Enlaces', path: '/enlaces' },
     { name: 'Rastrear Pedido', path: '/track' },
   ];
 
