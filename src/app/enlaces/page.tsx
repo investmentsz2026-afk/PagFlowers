@@ -18,7 +18,11 @@ export default async function EnlacesPage() {
       where: { key: 'monthly_catalog_pdf' }
     });
     if (pdfContent && pdfContent.value) {
-      catalogPdfUrl = pdfContent.value;
+      try {
+        catalogPdfUrl = JSON.parse(pdfContent.value);
+      } catch (e) {
+        catalogPdfUrl = pdfContent.value;
+      }
     }
   } catch (e) {
     console.error('Error fetching catalog pdf:', e);
