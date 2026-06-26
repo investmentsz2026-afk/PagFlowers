@@ -4,6 +4,8 @@ import { MessageCircle, ShoppingBag, Heart, Handshake, Building2, CalendarCheck,
 
 import { prisma } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Enlaces Rápidos | RossyFlowers',
   description: 'Contáctanos y encuentra enlaces rápidos a nuestros catálogos, atención por WhatsApp, novias y servicios corporativos.',
@@ -35,7 +37,7 @@ export default async function EnlacesPage() {
       icon: <ShoppingBag size={24} className="text-gold-600" />,
       href: catalogPdfUrl,
       primary: true,
-      external: catalogPdfUrl.endsWith('.pdf'),
+      external: catalogPdfUrl !== '/catalog',
     },
     {
       title: 'PEDIDOS POR WHATSAPP',
