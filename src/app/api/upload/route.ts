@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { verifyAuthRequest } from '@/lib/auth';
+import { prisma } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,19 +31,30 @@ export async function POST(req: NextRequest) {
     const sanitizedName = file.name.split('.')[0].replace(/[^a-zA-Z0-9]/g, '-');
     const newFileName = `${sanitizedName}-${Date.now()}.${ext}`;
 
-    const uploadDir = join(process.cwd(), 'public', 'images', 'uploads');
-    
-    // Ensure directory exists
+    // 1. Opcional: Escribir en el disco local (para desarrollo local)
     try {
+      const uploadDir = join(process.cwd(), 'public', 'images', 'uploads');
       await mkdir(uploadDir, { recursive: true });
-    } catch (e) {
-      // ignore
+      const filePath = join(uploadDir, newFileName);
+      await writeFile(filePath, buffer);
+    } catch (e: any) {
+      console.warn('No se pudo guardar localmente en disco (Vercel/Solo Lectura). Guardando en base de datos. Error:', e.message);
     }
 
-    const filePath = join(uploadDir, newFileName);
-    await writeFile(filePath, buffer);
+    // 2. Guardar en base de datos (para persistencia en producción/Vercel)
+    const base64String = buffer.toString('base64');
+    const filePayload = {
+      base64: base64String,
+      type: file.type
+    };
 
-    const publicUrl = `/images/uploads/${newFileName}`;
+    await prisma.content.upsert({
+      where: { key: `file_${newFileName}` },
+      update: { value: JSON.stringify(filePayload) },
+      create: { key: `file_${newFileName}`, value: JSON.stringify(filePayload) }
+    });
+
+    const publicUrl = `/api/upload/file?name=${newFileName}`;
 
     return NextResponse.json({ 
       message: 'Archivo subido correctamente.',

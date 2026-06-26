@@ -49,7 +49,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { key, value } = body; // value should be an object/array
 
-    if (!key || !value) {
+    if (!key || value === undefined) {
       return NextResponse.json(
         { message: 'Los campos "key" y "value" son obligatorios.' },
         { status: 400 }
