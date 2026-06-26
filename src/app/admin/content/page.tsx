@@ -27,6 +27,7 @@ export default function AdminContentPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [catalogPdf, setCatalogPdf] = useState('');
+  const [uploadedPdfName, setUploadedPdfName] = useState('');
 
   // Load config
   useEffect(() => {
@@ -48,6 +49,8 @@ export default function AdminContentPage() {
           const data = await resPdf.json();
           if (data && typeof data === 'string') {
             setCatalogPdf(data);
+            const parts = data.split('/');
+            setUploadedPdfName(parts[parts.length - 1]);
           }
         }
       } catch (e) {
@@ -118,6 +121,7 @@ export default function AdminContentPage() {
       if (res.ok) {
         const data = await res.json();
         setCatalogPdf(data.url);
+        setUploadedPdfName(file.name);
       } else {
         const err = await res.json();
         setError(err.message || 'Error al subir el PDF.');
@@ -180,8 +184,9 @@ export default function AdminContentPage() {
           
           {/* Notifications */}
           {success && (
-            <div className="p-4 bg-green-950/30 border border-green-500/20 text-green-400 rounded-xl text-xs font-bold transition-all">
-              ✔ ¡Sección "Nuestra Historia" actualizada con éxito!
+            <div className="p-4 bg-green-950/30 border border-green-500/20 text-green-400 rounded-xl text-xs font-bold transition-all space-y-1">
+              <div>✔ ¡Sección "Nuestra Historia" actualizada con éxito!</div>
+              <div>✔ ¡Catálogo PDF del mes guardado con éxito!</div>
             </div>
           )}
           {error && (
@@ -324,6 +329,13 @@ export default function AdminContentPage() {
                   </p>
                 </div>
               </div>
+
+              {uploadedPdfName && (
+                <div className="p-3 bg-green-950/20 border border-green-500/20 text-green-400 rounded-xl text-xs font-semibold flex items-center gap-2">
+                  <span className="text-emerald-500">✔</span>
+                  <span>Archivo subido: <strong className="text-white font-sans">{uploadedPdfName}</strong></span>
+                </div>
+              )}
 
               {catalogPdf && (
                 <div className="space-y-1 text-xs mt-4">
