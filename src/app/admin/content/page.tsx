@@ -183,6 +183,32 @@ export default function AdminContentPage() {
     }
   };
 
+  const saveTestimonialsToDb = async (updatedList: TestimonialConfig[]) => {
+    setSaving(true);
+    setSuccess(false);
+    setError('');
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: 'testimonials', value: updatedList }),
+      });
+
+      if (res.ok) {
+        setTestimonials(updatedList);
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError('Error al guardar los testimonios en el servidor.');
+      }
+    } catch (err) {
+      setError('Error de conexión al guardar testimonios.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleStartEditTestimonial = (index: number) => {
     setEditingIndex(index);
     setTestimonialForm(testimonials[index]);
@@ -193,28 +219,27 @@ export default function AdminContentPage() {
     setTestimonialForm({ name: '', district: '', initials: '', text: '', stars: 5 });
   };
 
-  const handleSaveTestimonial = () => {
+  const handleSaveTestimonial = async () => {
     if (!testimonialForm.name || !testimonialForm.district || !testimonialForm.text) {
       alert('Por favor complete el nombre, distrito y mensaje del testimonio.');
       return;
     }
     
-    setTestimonials(prev => {
-      const updated = [...prev];
-      if (editingIndex !== null) {
-        updated[editingIndex] = testimonialForm;
-      } else {
-        updated.push(testimonialForm);
-      }
-      return updated;
-    });
+    const updated = [...testimonials];
+    if (editingIndex !== null) {
+      updated[editingIndex] = testimonialForm;
+    } else {
+      updated.push(testimonialForm);
+    }
 
+    await saveTestimonialsToDb(updated);
     handleCancelEditTestimonial();
   };
 
-  const handleDeleteTestimonial = (index: number) => {
+  const handleDeleteTestimonial = async (index: number) => {
     if (confirm('¿Está seguro de eliminar este testimonio?')) {
-      setTestimonials(prev => prev.filter((_, idx) => idx !== index));
+      const updated = testimonials.filter((_, idx) => idx !== index);
+      await saveTestimonialsToDb(updated);
     }
   };
 
