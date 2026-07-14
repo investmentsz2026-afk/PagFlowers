@@ -94,7 +94,7 @@ export default function AdminProductsPage() {
       salePrice: '',
       saleDescription: '',
       stock: '10',
-      category: 'Ramos',
+      category: categories.length > 0 ? categories[0].name : 'Ramos',
       tagsInput: '',
       isExclusive: false,
       isFeatured: false,
