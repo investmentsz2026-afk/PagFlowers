@@ -236,7 +236,7 @@ export default function AdminOrdersPage() {
                       </td>
                       <td className="p-4">
                         <p className="font-semibold text-white">
-                          {new Date(ord.deliveryDate).toLocaleDateString('es-ES')}
+                          {new Date(ord.deliveryDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })}
                         </p>
                         <p className="text-[10px] text-neutral-500">{ord.deliveryTime}</p>
                       </td>
@@ -323,7 +323,7 @@ export default function AdminOrdersPage() {
                   <li><strong>Email:</strong> {selectedOrder.clientEmail}</li>
                   <li><strong>Dirección:</strong> {selectedOrder.deliveryAddress}, {selectedOrder.deliveryDistrict}</li>
                   <li className="flex gap-4">
-                    <span><strong>Fecha:</strong> {new Date(selectedOrder.deliveryDate).toLocaleDateString('es-ES')}</span>
+                    <span><strong>Fecha:</strong> {new Date(selectedOrder.deliveryDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })}</span>
                     <span><strong>Hora:</strong> {selectedOrder.deliveryTime}</span>
                   </li>
                 </ul>
@@ -335,7 +335,13 @@ export default function AdminOrdersPage() {
                   <h4 className="text-[10px] uppercase font-bold tracking-widest text-gold-400 flex items-center gap-1">
                     <Check size={12} /> Comprobante de Pago Adjunto
                   </h4>
-                  <a href={selectedOrder.paymentReceipt} target="_blank" rel="noopener noreferrer" className="block w-full sm:w-48 border border-gold-800/20 rounded-lg overflow-hidden hover:opacity-80 transition-opacity shadow-sm">
+                  <a 
+                    href={selectedOrder.paymentReceipt} 
+                    download={`comprobante_${selectedOrder.orderNumber}.png`}
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block w-full sm:w-48 border border-gold-800/20 rounded-lg overflow-hidden hover:opacity-80 transition-opacity shadow-sm cursor-pointer"
+                  >
                     <img src={selectedOrder.paymentReceipt} alt="Comprobante" className="w-full h-auto object-cover" />
                   </a>
                   <p className="text-[9px] text-neutral-500 italic">Haga clic en la imagen para ver en tamaño completo.</p>

@@ -148,17 +148,13 @@ export async function POST(req: NextRequest) {
     // Process Payment Receipt Upload
     let receiptUrl = null;
     if (paymentReceiptFile && paymentMethod !== 'TARJETA') {
-      const bytes = await paymentReceiptFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}_${paymentReceiptFile.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-      const uploadDir = join(process.cwd(), 'public', 'uploads', 'receipts');
-      
       try {
-        await mkdir(uploadDir, { recursive: true });
-        await writeFile(join(uploadDir, filename), buffer);
-        receiptUrl = `/uploads/receipts/${filename}`;
+        const bytes = await paymentReceiptFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const base64 = buffer.toString('base64');
+        receiptUrl = `data:${paymentReceiptFile.type || 'image/png'};base64,${base64}`;
       } catch (err) {
-        console.error('Error saving receipt file:', err);
+        console.error('Error saving receipt file (base64):', err);
       }
     }
 

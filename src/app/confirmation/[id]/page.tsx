@@ -115,8 +115,13 @@ function ConfirmationPageContent({ params }: PageProps) {
     }
     
     if (order.paymentReceipt) {
-      const receiptUrl = `${window.location.origin}${order.paymentReceipt}`;
-      message += `%0A*Comprobante de Pago:* ${receiptUrl}%0A`;
+      if (order.paymentReceipt.startsWith('data:')) {
+        const confirmUrl = `${window.location.origin}/confirmation/${order.id}`;
+        message += `%0A*Comprobante de Pago:* (Subido al sistema. Ver aquí: ${confirmUrl})%0A`;
+      } else {
+        const receiptUrl = `${window.location.origin}${order.paymentReceipt}`;
+        message += `%0A*Comprobante de Pago:* ${receiptUrl}%0A`;
+      }
     }
     
     message += `%0AAdjunto comprobante de pago para validar mi pedido. ¡Muchas gracias!`;
@@ -154,6 +159,7 @@ function ConfirmationPageContent({ params }: PageProps) {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
 
   return (

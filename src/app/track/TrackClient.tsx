@@ -149,7 +149,7 @@ export default function TrackClient() {
                      Entrega Programada
                    </p>
                    <p className="font-serif text-lg text-luxury-black font-semibold">
-                     {new Date(trackingData.deliveryDate).toLocaleDateString('es-PE', { day: 'numeric', month: 'long' })}
+                     {new Date(trackingData.deliveryDate).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', timeZone: 'UTC' })}
                    </p>
                    <p className="font-sans text-sm text-gold-600 font-medium">
                      {trackingData.deliveryTime} • {trackingData.deliveryDistrict}
