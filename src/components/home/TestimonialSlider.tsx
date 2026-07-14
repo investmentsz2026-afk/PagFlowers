@@ -29,22 +29,45 @@ const testimonials = [
 ];
 
 export default function TestimonialSlider() {
+  const [list, setList] = useState<any[]>(testimonials);
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % testimonials.length);
-    }, 8000);
-    return () => clearInterval(timer);
+    async function loadTestimonials() {
+      try {
+        const res = await fetch('/api/content?key=testimonials');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setList(data);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load dynamic testimonials:', e);
+      }
+    }
+    loadTestimonials();
   }, []);
 
+  useEffect(() => {
+    if (list.length === 0) return;
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % list.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [list]);
+
   const handlePrev = () => {
-    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    if (list.length === 0) return;
+    setCurrent((prev) => (prev - 1 + list.length) % list.length);
   };
 
   const handleNext = () => {
-    setCurrent((prev) => (prev + 1) % testimonials.length);
+    if (list.length === 0) return;
+    setCurrent((prev) => (prev + 1) % list.length);
   };
+
+  if (list.length === 0) return null;
 
   return (
     <div className="relative glass-card max-w-4xl mx-auto p-8 sm:p-12 rounded-2xl overflow-hidden mt-10">
@@ -61,25 +84,25 @@ export default function TestimonialSlider() {
         >
           {/* Stars */}
           <div className="flex justify-center gap-1">
-            {[...Array(testimonials[current].stars)].map((_, i) => (
+            {[...Array(list[current].stars)].map((_, i) => (
               <Star key={i} size={18} className="fill-gold-400 text-gold-400" />
             ))}
           </div>
 
           {/* Testimonial text */}
           <p className="font-serif text-base sm:text-lg italic text-luxury-black/80 leading-relaxed max-w-2xl mx-auto">
-            "{testimonials[current].text}"
+            "{list[current].text}"
           </p>
 
           {/* Customer Avatar & Name */}
           <div className="flex items-center justify-center gap-4 pt-4">
             <div className="w-12 h-12 rounded-full bg-gold-100 border border-gold-300 flex items-center justify-center font-sans font-bold text-gold-700 text-sm">
-              {testimonials[current].initials}
+              {list[current].initials}
             </div>
             <div className="text-left">
-              <h4 className="font-sans text-sm font-semibold text-luxury-black">{testimonials[current].name}</h4>
+              <h4 className="font-sans text-sm font-semibold text-luxury-black">{list[current].name}</h4>
               <p className="font-sans text-[11px] uppercase tracking-wider text-gold-600 font-medium">
-                Cliente de {testimonials[current].district}
+                Cliente de {list[current].district}
               </p>
             </div>
           </div>

@@ -1,7 +1,39 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Save, AlertCircle, Sparkles, UploadCloud, Image as ImageIcon } from 'lucide-react';
+import { Save, AlertCircle, Sparkles, UploadCloud, Image as ImageIcon, Trash2, Edit3, Plus, Star } from 'lucide-react';
+
+interface TestimonialConfig {
+  name: string;
+  district: string;
+  initials: string;
+  text: string;
+  stars: number;
+}
+
+const DEFAULT_TESTIMONIALS: TestimonialConfig[] = [
+  {
+    name: 'Alessandra De la Fuente',
+    district: 'San Isidro',
+    initials: 'AD',
+    text: 'La delicadeza de los arreglos florales es insuperable. Compré la Caja Hexagonal Dorada y mi madre quedó completamente fascinada. El servicio fotográfico previo al envío me dio muchísima seguridad. ¡La mejor florería de Lima sin duda!',
+    stars: 5,
+  },
+  {
+    name: 'Giancarlo Barbieri',
+    district: 'Miraflores',
+    initials: 'GB',
+    text: 'Impresionante nivel de servicio. Hice un pedido de orquídeas blancas a última hora de la mañana y lo entregaron a las 3 PM impecable, tal cual las fotos. Las dedicatorias en la tarjeta premium con sello de cera le dan un toque increíble.',
+    stars: 5,
+  },
+  {
+    name: 'Mariana Prado',
+    district: 'La Molina',
+    initials: 'MP',
+    text: 'Los ramos de rosas en tonos pastel son una obra de arte. Se nota el cuidado y el diseño florístico detrás. El proceso de compra fue rapidísimo, y el botón directo a WhatsApp para coordinar el pago y envío por Yape funciona de maravilla.',
+    stars: 5,
+  },
+];
 
 interface OurStoryConfig {
   title: string;
@@ -29,13 +61,24 @@ export default function AdminContentPage() {
   const [catalogPdf, setCatalogPdf] = useState('');
   const [uploadedPdfName, setUploadedPdfName] = useState('');
 
+  const [testimonials, setTestimonials] = useState<TestimonialConfig[]>(DEFAULT_TESTIMONIALS);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [testimonialForm, setTestimonialForm] = useState<TestimonialConfig>({
+    name: '',
+    district: '',
+    initials: '',
+    text: '',
+    stars: 5,
+  });
+
   // Load config
   useEffect(() => {
     async function loadContent() {
       try {
-        const [resStory, resPdf] = await Promise.all([
+        const [resStory, resPdf, resTestimonials] = await Promise.all([
           fetch('/api/content?key=our_story'),
-          fetch('/api/content?key=monthly_catalog_pdf')
+          fetch('/api/content?key=monthly_catalog_pdf'),
+          fetch('/api/content?key=testimonials')
         ]);
         
         if (resStory.ok) {
@@ -51,6 +94,13 @@ export default function AdminContentPage() {
             setCatalogPdf(data);
             const parts = data.split('/');
             setUploadedPdfName(parts[parts.length - 1]);
+          }
+        }
+
+        if (resTestimonials.ok) {
+          const data = await resTestimonials.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setTestimonials(data);
           }
         }
       } catch (e) {
@@ -133,6 +183,41 @@ export default function AdminContentPage() {
     }
   };
 
+  const handleStartEditTestimonial = (index: number) => {
+    setEditingIndex(index);
+    setTestimonialForm(testimonials[index]);
+  };
+
+  const handleCancelEditTestimonial = () => {
+    setEditingIndex(null);
+    setTestimonialForm({ name: '', district: '', initials: '', text: '', stars: 5 });
+  };
+
+  const handleSaveTestimonial = () => {
+    if (!testimonialForm.name || !testimonialForm.district || !testimonialForm.text) {
+      alert('Por favor complete el nombre, distrito y mensaje del testimonio.');
+      return;
+    }
+    
+    setTestimonials(prev => {
+      const updated = [...prev];
+      if (editingIndex !== null) {
+        updated[editingIndex] = testimonialForm;
+      } else {
+        updated.push(testimonialForm);
+      }
+      return updated;
+    });
+
+    handleCancelEditTestimonial();
+  };
+
+  const handleDeleteTestimonial = (index: number) => {
+    if (confirm('¿Está seguro de eliminar este testimonio?')) {
+      setTestimonials(prev => prev.filter((_, idx) => idx !== index));
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -151,6 +236,11 @@ export default function AdminContentPage() {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ key: 'monthly_catalog_pdf', value: catalogPdf }),
+        }),
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'testimonials', value: testimonials }),
         })
       ];
 
@@ -187,6 +277,7 @@ export default function AdminContentPage() {
             <div className="p-4 bg-green-950/30 border border-green-500/20 text-green-400 rounded-xl text-xs font-bold transition-all space-y-1">
               <div>✔ ¡Sección "Nuestra Historia" actualizada con éxito!</div>
               <div>✔ ¡Catálogo PDF del mes guardado con éxito!</div>
+              <div>✔ ¡Testimonios del carrusel guardados con éxito!</div>
             </div>
           )}
           {error && (
@@ -353,6 +444,139 @@ export default function AdminContentPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Testimonials Section */}
+          <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
+            <div className="flex items-center gap-2 border-b border-gold-800/10 pb-3">
+              <Sparkles size={16} className="text-gold-400" />
+              <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                Gestión de Testimonios (Carrusel Portada)
+              </h3>
+            </div>
+
+            {/* Testimonials List */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {testimonials.map((t, idx) => (
+                  <div key={idx} className="p-4 bg-neutral-900 border border-gold-800/10 rounded-xl flex justify-between items-start gap-4">
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-8 h-8 rounded-full bg-gold-400/10 border border-gold-400/20 flex items-center justify-center font-bold text-gold-400 text-xs">
+                          {t.initials || t.name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-white">{t.name}</h4>
+                          <span className="text-[10px] text-neutral-400 uppercase font-semibold">Cliente de {t.district}</span>
+                        </div>
+                      </div>
+                      <p className="text-neutral-300 italic">"{t.text}"</p>
+                      <div className="flex gap-0.5">
+                        {[...Array(t.stars)].map((_, i) => (
+                          <Star key={i} size={12} className="fill-gold-400 text-gold-400" />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleStartEditTestimonial(idx)}
+                        className="p-1.5 bg-neutral-800 text-gold-400 hover:text-gold-300 rounded cursor-pointer"
+                        title="Editar testimonio"
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTestimonial(idx)}
+                        className="p-1.5 bg-neutral-800 text-red-400 hover:text-red-300 rounded cursor-pointer"
+                        title="Eliminar testimonio"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Testimonial Form (Add or Edit) */}
+              <div className="p-4 sm:p-6 bg-neutral-900/60 border border-gold-800/20 rounded-xl space-y-4 text-xs">
+                <h4 className="font-bold text-white uppercase tracking-wider text-[10px] text-gold-400">
+                  {editingIndex !== null ? '📝 Editar Testimonio' : '➕ Agregar Testimonio'}
+                </h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Nombre del Cliente *</label>
+                    <input
+                      type="text"
+                      placeholder="Ej. Mariana Prado"
+                      value={testimonialForm.name}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const initials = val.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+                        setTestimonialForm(prev => ({ ...prev, name: val, initials }));
+                      }}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Distrito *</label>
+                    <input
+                      type="text"
+                      placeholder="Ej. La Molina"
+                      value={testimonialForm.district}
+                      onChange={(e) => setTestimonialForm(prev => ({ ...prev, district: e.target.value }))}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Estrellas *</label>
+                    <select
+                      value={testimonialForm.stars}
+                      onChange={(e) => setTestimonialForm(prev => ({ ...prev, stars: parseInt(e.target.value) }))}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                    >
+                      <option value="5">5 Estrellas</option>
+                      <option value="4">4 Estrellas</option>
+                      <option value="3">3 Estrellas</option>
+                      <option value="2">2 Estrellas</option>
+                      <option value="1">1 Estrella</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Mensaje/Reseña del Cliente *</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Escribe la opinión del cliente sobre RossyFlowers..."
+                    value={testimonialForm.text}
+                    onChange={(e) => setTestimonialForm(prev => ({ ...prev, text: e.target.value }))}
+                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  {editingIndex !== null && (
+                    <button
+                      type="button"
+                      onClick={handleCancelEditTestimonial}
+                      className="px-4 py-2 border border-gold-800/20 text-neutral-400 hover:text-white rounded text-[10px] uppercase font-bold tracking-wider cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleSaveTestimonial}
+                    className="px-4 py-2 bg-gold-400 hover:bg-gold-500 text-neutral-950 rounded text-[10px] uppercase font-bold tracking-wider cursor-pointer flex items-center gap-1"
+                  >
+                    {editingIndex !== null ? 'Actualizar' : 'Agregar'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
