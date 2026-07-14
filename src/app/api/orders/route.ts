@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 // GET /api/orders - Get all orders (Protected)
 export async function GET(req: NextRequest) {
@@ -179,7 +180,7 @@ export async function POST(req: NextRequest) {
           deliveryFee: parseFloat(deliveryFee || '0'),
           status: 'PENDING',
           paymentMethod,
-          paymentStatus: paymentMethod === 'TARJETA' ? 'PAID' : 'PENDING',
+          paymentStatus: 'PENDING', // Always initial pending for secure verification
           paymentReceipt: receiptUrl,
           items: {
             create: dbItemsData,
@@ -205,13 +206,68 @@ export async function POST(req: NextRequest) {
       return newOrder;
     });
 
+    // Create Mercado Pago Preference if paying with card
+    let initPoint = null;
+    const mpAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+    if (paymentMethod === 'TARJETA') {
+      if (!mpAccessToken) {
+        console.error('MERCADOPAGO_ACCESS_TOKEN is not configured in .env');
+      } else {
+        try {
+          const client = new MercadoPagoConfig({ accessToken: mpAccessToken });
+          const preference = new Preference(client);
+
+          // Map items to Mercado Pago format
+          const mpItems = createdOrder.items.map((item) => ({
+            id: item.productId.toString(),
+            title: item.productName,
+            quantity: item.quantity,
+            unit_price: item.price,
+            currency_id: 'PEN',
+          }));
+
+          // Add delivery fee as an item if present
+          if (createdOrder.deliveryFee > 0) {
+            mpItems.push({
+              id: 'delivery_fee',
+              title: 'Costo de Envío',
+              quantity: 1,
+              unit_price: createdOrder.deliveryFee,
+              currency_id: 'PEN',
+            });
+          }
+
+          const origin = req.headers.get('origin') || 'http://localhost:3000';
+          const redirectUrl = `${origin}/confirmation/${createdOrder.id}`;
+
+          const preferenceResult = await preference.create({
+            body: {
+              items: mpItems,
+              back_urls: {
+                success: `${redirectUrl}?payment_status=approved`,
+                failure: `${redirectUrl}?payment_status=failed`,
+                pending: `${redirectUrl}?payment_status=pending`,
+              },
+              auto_return: 'approved',
+              external_reference: createdOrder.orderNumber,
+            },
+          });
+
+          initPoint = preferenceResult.init_point;
+        } catch (mpError) {
+          console.error('Failed to create Mercado Pago preference:', mpError);
+        }
+      }
+    }
+
     // Simulated Automation hooks
     console.log(`[AUTOMATION] Venta registrada. Pedido número: ${orderNumber}`);
     console.log(`[AUTOMATION] Inventario actualizado para productos: ${items.map((i: any) => i.name).join(', ')}`);
     console.log(`[AUTOMATION] Correo de confirmación enviado a: ${clientEmail}`);
     console.log(`[AUTOMATION] Notificación de nuevo pedido enviada al administrador.`);
 
-    return NextResponse.json(createdOrder, { status: 201 });
+    return NextResponse.json({ ...createdOrder, initPoint }, { status: 201 });
   } catch (error: any) {
     console.error('Create order error:', error);
     return NextResponse.json(

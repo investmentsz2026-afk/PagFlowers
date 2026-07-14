@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, use, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, MessageCircle, Printer, ShoppingBag, MapPin, Calendar, Clock, Sparkles } from 'lucide-react';
 
 interface OrderItem {
@@ -37,19 +38,48 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function ConfirmationPage({ params }: PageProps) {
+function ConfirmationPageContent({ params }: PageProps) {
   const { id } = use(params);
+  const searchParams = useSearchParams();
+  const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id');
+  const paymentStatus = searchParams.get('status') || searchParams.get('payment_status') || searchParams.get('collection_status');
+
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
 
-  // Fetch placed order details
+  // Fetch placed order details and confirm payment if approved
   useEffect(() => {
     async function loadOrder() {
       try {
         const res = await fetch(`/api/orders/${id}`);
         if (res.ok) {
           const data = await res.json();
-          setOrder(data);
+          
+          const isApproved = paymentStatus === 'approved';
+          if (paymentId && isApproved && data.paymentStatus !== 'PAID') {
+            setVerifyingPayment(true);
+            try {
+              const confirmRes = await fetch(`/api/orders/${id}/confirm-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId }),
+              });
+              if (confirmRes.ok) {
+                const confirmData = await confirmRes.json();
+                setOrder(confirmData.order);
+              } else {
+                setOrder(data);
+              }
+            } catch (e) {
+              console.error('Payment confirmation error:', e);
+              setOrder(data);
+            } finally {
+              setVerifyingPayment(false);
+            }
+          } else {
+            setOrder(data);
+          }
         }
       } catch (e) {
         console.error('Failed to load order details in confirmation page:', e);
@@ -58,7 +88,7 @@ export default function ConfirmationPage({ params }: PageProps) {
       }
     }
     loadOrder();
-  }, [id]);
+  }, [id, paymentId, paymentStatus]);
 
   // Generate WhatsApp text details URL
   const getWhatsAppUrl = () => {
@@ -134,6 +164,13 @@ export default function ConfirmationPage({ params }: PageProps) {
         <div className="bg-[var(--luxury-cream)]/75 backdrop-blur-xl border border-gold-400/10 rounded-3xl p-6 sm:p-12 shadow-xl space-y-8 print:border-none print:shadow-none print:p-0 print:bg-white print:text-black print:space-y-0">
           
           <div id="receipt-container" className="space-y-8 bg-transparent print:bg-white print:text-black print:p-6 print:max-w-2xl print:mx-auto print:space-y-4">
+            {verifyingPayment && (
+              <div className="p-4 bg-gold-500/10 border border-gold-500/30 text-gold-700 dark:text-gold-400 rounded-2xl text-xs font-bold text-center animate-pulse flex items-center justify-center gap-2 print:hidden">
+                <span className="w-2 h-2 rounded-full bg-gold-500 animate-ping" />
+                <span>Verificando su pago con Mercado Pago... Por favor, no cierre esta ventana.</span>
+              </div>
+            )}
+
             {/* Header Card */}
             <div className="text-center space-y-4 print:text-center print:border-b print:border-black/20 print:pb-4 print:space-y-2">
               <div className="flex justify-center print:hidden">
@@ -291,5 +328,18 @@ export default function ConfirmationPage({ params }: PageProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConfirmationPage(props: PageProps) {
+  return (
+    <Suspense fallback={
+      <div className="max-w-7xl mx-auto px-4 pt-48 pb-32 text-center font-sans">
+        <div className="w-16 h-16 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-sm text-luxury-black/60">Cargando confirmación de pedido...</p>
+      </div>
+    }>
+      <ConfirmationPageContent {...props} />
+    </Suspense>
   );
 }

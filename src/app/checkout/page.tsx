@@ -153,8 +153,12 @@ export default function CheckoutPage() {
         const order = await res.json();
         // Clear cart context state
         clearCart();
-        // Redirect to success page
-        router.push(`/confirmation/${order.id}`);
+        // Redirect to Mercado Pago or success page
+        if (order.paymentMethod === 'TARJETA' && order.initPoint) {
+          window.location.href = order.initPoint;
+        } else {
+          router.push(`/confirmation/${order.id}`);
+        }
       } else {
         const errorData = await res.json();
         alert(`Error al registrar el pedido: ${errorData.message}\n\nDetalle técnico: ${errorData.error}`);
@@ -378,26 +382,40 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  {(formData.paymentMethod === 'YAPE' || formData.paymentMethod === 'PLIN') && (
+                  {formData.paymentMethod === 'YAPE' && (
                     <div className="space-y-4 text-center font-sans text-xs">
                       <h4 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600">
-                        Pago Instantáneo con QR {formData.paymentMethod}
+                        Pago Instantáneo con Yape
                       </h4>
                       <p className="text-luxury-black/60 max-w-md mx-auto leading-relaxed">
-                        Escanea el código QR de abajo desde la app de tu celular, ingresa el monto total de <strong>S/ {cartTotal.toFixed(2)}</strong>, y sube tu comprobante a nuestro WhatsApp al finalizar la compra.
+                        Escanea el código QR desde tu aplicación de Yape, ingresa el monto total de <strong>S/ {cartTotal.toFixed(2)}</strong>, y sube tu comprobante al finalizar la compra.
                       </p>
                       
-                      {/* Dynamic Mock QR Code Box */}
+                      {/* Real QR Code Box */}
                       <div className="flex flex-col items-center justify-center p-4 bg-[var(--background)] border border-gold-400/10 rounded-xl w-48 mx-auto shadow-sm space-y-2">
-                        <div className="w-40 h-40 bg-[var(--luxury-cream)] dark:bg-neutral-800 flex items-center justify-center relative border border-dashed border-gold-400/30 rounded">
-                          {/* Inner Mock QR lines rendering */}
-                          <QrCode size={96} className="text-luxury-black stroke-[1.2]" />
-                          <div className="absolute bottom-2 font-bold text-[8px] tracking-widest text-gold-600 bg-[var(--background)] px-2 py-0.5 shadow-sm rounded-full">
-                            {formData.paymentMethod} MOCK
-                          </div>
+                        <div className="w-40 h-40 bg-[var(--luxury-cream)] dark:bg-neutral-850 flex items-center justify-center relative border border-dashed border-gold-400/30 rounded overflow-hidden">
+                          <img src="/images/qr.jpeg" alt="Código QR Yape" className="w-full h-full object-contain" />
                         </div>
-                        <span className="text-[10px] font-bold text-luxury-black">Titular: RossyFlowers SAC</span>
-                        <span className="text-[9px] text-gold-600 font-bold">Cel: 914 060 876</span>
+                        <span className="text-[10px] font-bold text-luxury-black">Titular: William Santana Torres</span>
+                        <span className="text-[9px] text-gold-600 font-bold">Celular: 914 060 876</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {formData.paymentMethod === 'PLIN' && (
+                    <div className="space-y-4 text-center font-sans text-xs">
+                      <h4 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600">
+                        Pago Instantáneo con Plin
+                      </h4>
+                      <p className="text-luxury-black/60 max-w-md mx-auto leading-relaxed">
+                        Transfiere el monto total de <strong>S/ {cartTotal.toFixed(2)}</strong> vía Plin al número de celular abajo, y sube tu comprobante al finalizar la compra.
+                      </p>
+                      
+                      {/* Plin Text Box without QR */}
+                      <div className="flex flex-col items-center justify-center p-5 bg-[var(--background)] border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-1.5">
+                        <span className="bg-emerald-500 text-white font-bold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full">Plin Habilitado</span>
+                        <span className="text-[11px] font-bold text-luxury-black">Titular: William Santana Torres</span>
+                        <span className="text-sm text-gold-600 font-bold font-mono">914 060 876</span>
                       </div>
                     </div>
                   )}
@@ -413,13 +431,13 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs">
                         <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-1">
                           <span className="font-bold block text-gold-700">BCP Soles</span>
-                          <p className="text-luxury-black/80 font-mono font-semibold">193-9999999-0-12</p>
-                          <span className="text-[10px] text-luxury-black/40">CCI: 002-193-009999999012-14</span>
+                          <p className="text-luxury-black/80 font-mono font-semibold">19395917712075</p>
+                          <span className="text-[10px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00219319591771207511</span>
                         </div>
                         <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-1">
                           <span className="font-bold block text-gold-700">Interbank Soles</span>
-                          <p className="text-luxury-black/80 font-mono font-semibold">200-300123456-7</p>
-                          <span className="text-[10px] text-luxury-black/40">CCI: 003-200-003001234567-20</span>
+                          <p className="text-luxury-black/80 font-mono font-semibold">2903370348927</p>
+                          <span className="text-[10px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00329001337034892747</span>
                         </div>
                       </div>
                     </div>
