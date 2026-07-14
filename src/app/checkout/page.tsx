@@ -392,12 +392,14 @@ export default function CheckoutPage() {
                       </p>
                       
                       {/* Real QR Code Box */}
-                      <div className="flex flex-col items-center justify-center p-4 bg-[var(--background)] border border-gold-400/10 rounded-xl w-48 mx-auto shadow-sm space-y-2">
-                        <div className="w-40 h-40 bg-[var(--luxury-cream)] dark:bg-neutral-850 flex items-center justify-center relative border border-dashed border-gold-400/30 rounded overflow-hidden">
+                      <div className="flex flex-col items-center justify-center p-5 bg-[var(--background)] border border-gold-400/10 rounded-xl w-64 mx-auto shadow-sm space-y-3">
+                        <div className="w-56 h-56 bg-[var(--luxury-cream)] dark:bg-neutral-850 flex items-center justify-center relative border border-dashed border-gold-400/30 rounded overflow-hidden">
                           <img src="/images/qr.jpeg" alt="Código QR Yape" className="w-full h-full object-contain" />
                         </div>
-                        <span className="text-[10px] font-bold text-luxury-black">Titular: William Santana Torres</span>
-                        <span className="text-[9px] text-gold-600 font-bold">Celular: 914 060 876</span>
+                        <div className="space-y-1">
+                          <span className="text-xs font-bold text-luxury-black block">Titular: William Santana Torres</span>
+                          <span className="text-xs text-luxury-black/70 block">Celular: <strong className="text-neutral-950 dark:text-white font-extrabold text-sm">914 060 876</strong></span>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -412,10 +414,12 @@ export default function CheckoutPage() {
                       </p>
                       
                       {/* Plin Text Box without QR */}
-                      <div className="flex flex-col items-center justify-center p-5 bg-[var(--background)] border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-1.5">
-                        <span className="bg-emerald-500 text-white font-bold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded-full">Plin Habilitado</span>
-                        <span className="text-[11px] font-bold text-luxury-black">Titular: William Santana Torres</span>
-                        <span className="text-sm text-gold-600 font-bold font-mono">914 060 876</span>
+                      <div className="flex flex-col items-center justify-center p-6 bg-[var(--background)] border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-2">
+                        <span className="bg-emerald-500 text-white font-bold text-[8px] uppercase tracking-widest px-2.5 py-0.5 rounded-full">Plin Habilitado</span>
+                        <div className="space-y-1">
+                          <span className="text-xs font-bold text-luxury-black block">Titular: William Santana Torres</span>
+                          <span className="text-xs text-luxury-black/70 block">Celular: <strong className="text-neutral-950 dark:text-white font-extrabold text-sm font-mono">914 060 876</strong></span>
+                        </div>
                       </div>
                     </div>
                   )}

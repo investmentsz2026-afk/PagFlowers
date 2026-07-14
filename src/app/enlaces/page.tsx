@@ -61,13 +61,6 @@ export default async function EnlacesPage() {
       external: true,
     },
     {
-      title: 'NOVIAS Y MATRIMONIOS',
-      subtitle: 'Diseña el bouquet de tus sueños con nuestras floristas.',
-      icon: <Heart size={24} className="text-[#F46261]" />,
-      href: `https://wa.me/${whatsappNumber}?text=Hola,%20busco%20asesoría%20para%20flores%20de%20novia.`,
-      external: true,
-    },
-    {
       title: 'ALIANZAS E INFLUENCERS',
       subtitle: '¡Seamos socios de grandes proyectos y colaboraciones!',
       icon: <Handshake size={24} className="text-luxury-black" />,
