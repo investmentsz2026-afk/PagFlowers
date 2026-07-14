@@ -32,7 +32,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="bg-[var(--background)] min-h-screen pb-20">
+    <div className="bg-[#FAF8F5] dark:bg-[#0B0B0B] min-h-screen pb-20">
       <CatalogClient initialProducts={products} initialCategory={initialCategory} dbCategories={dbCategories} />
     </div>
   );
