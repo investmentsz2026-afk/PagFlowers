@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 // GET /api/products/[id] - Get a single product details
 export async function GET(
@@ -92,6 +93,10 @@ export async function PUT(
       data: dataToUpdate,
     });
 
+    // Clear caches so the homepage and catalog page reflect the change immediately
+    revalidatePath('/');
+    revalidatePath('/catalog');
+
     return NextResponse.json(updatedProduct);
   } catch (error: any) {
     console.error('Update product error:', error);
@@ -131,6 +136,10 @@ export async function DELETE(
     await prisma.product.delete({
       where: { id: productId },
     });
+
+    // Clear caches so the homepage and catalog page reflect the change immediately
+    revalidatePath('/');
+    revalidatePath('/catalog');
 
     return NextResponse.json({ message: 'Producto eliminado exitosamente.' });
   } catch (error: any) {

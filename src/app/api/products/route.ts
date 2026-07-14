@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 // GET /api/products - List all products
 export async function GET(req: NextRequest) {
@@ -103,6 +104,10 @@ export async function POST(req: NextRequest) {
         isFeatured: !!isFeatured,
       },
     });
+
+    // Clear caches so the homepage and catalog page reflect the change immediately
+    revalidatePath('/');
+    revalidatePath('/catalog');
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error: any) {

@@ -68,16 +68,19 @@ export default async function HomePage() {
     // 3. Fetch products categories
     featuredProducts = await prisma.product.findMany({
       where: { isFeatured: true },
+      orderBy: { updatedAt: 'desc' },
       take: 4,
     });
 
     exclusiveProducts = await prisma.product.findMany({
       where: { isExclusive: true },
+      orderBy: { updatedAt: 'desc' },
       take: 3,
     });
 
     saleProducts = await prisma.product.findMany({
       where: { NOT: { salePrice: null } },
+      orderBy: { updatedAt: 'desc' },
       take: 4,
     });
   } catch (error) {
