@@ -83,3 +83,24 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model Subscription {
+  id               Int      @id @default(autoincrement())
+  subNumber        String   @unique
+  clientName       String
+  clientPhone      String
+  clientEmail      String
+  deliveryAddress  String
+  deliveryDistrict String
+  planName         String
+  frequency        String   // SEMANAL, QUINCENAL, MENSUAL
+  flowerPreference String   // ROSAS, MIX, TULIPANES, PERSONALIZADO
+  customDetails    String?  // Custom details written by client
+  paymentMethod    String   // TARJETA, YAPE, PLIN, TRANSFERENCIA
+  paymentStatus    String   @default("PENDING") // PENDING, PAID
+  paymentReceipt   String?  // Base64 receipt string
+  total            Float
+  status           String   @default("ACTIVE") // ACTIVE, PAUSED, CANCELLED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

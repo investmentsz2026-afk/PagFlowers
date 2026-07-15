@@ -17,7 +17,8 @@ import {
   Shield,
   AlertTriangle,
   Truck,
-  Tags
+  Tags,
+  CalendarCheck
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -98,10 +99,10 @@ function AuthenticatedAdmin({ children }: { children: React.ReactNode }) {
     
     // Clear everything properly
     localStorage.removeItem('admin_token');
-    await fetch('/api/auth/logout', { method: 'POST' }); // Clear httpOnly cookie
-    
     setTimeout(() => {
-      window.location.href = '/';
+      fetch('/api/auth/logout', { method: 'POST' }).then(() => {
+        router.push('/admin/login');
+      });
     }, 2000);
   };
 
@@ -110,6 +111,7 @@ function AuthenticatedAdmin({ children }: { children: React.ReactNode }) {
     { name: 'Productos', path: '/admin/products', icon: <ShoppingBag size={18} /> },
     { name: 'Categorías', path: '/admin/categories', icon: <Tags size={18} /> },
     { name: 'Pedidos', path: '/admin/orders', icon: <Receipt size={18} /> },
+    { name: 'Suscripciones', path: '/admin/subscriptions', icon: <CalendarCheck size={18} /> },
     { name: 'Zonas de Envío', path: '/admin/delivery', icon: <Truck size={18} /> },
     { name: 'Clientes', path: '/admin/clients', icon: <Users size={18} /> },
     { name: 'Contenido', path: '/admin/content', icon: <Settings size={18} /> },

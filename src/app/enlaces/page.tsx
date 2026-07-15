@@ -61,13 +61,6 @@ export default async function EnlacesPage() {
       external: true,
     },
     {
-      title: 'ALIANZAS E INFLUENCERS',
-      subtitle: '¡Seamos socios de grandes proyectos y colaboraciones!',
-      icon: <Handshake size={24} className="text-luxury-black" />,
-      href: `https://wa.me/${whatsappNumber}?text=Hola,%20me%20interesa%20una%20colaboración/alianza.`,
-      external: true,
-    },
-    {
       title: 'COMPRAS CORPORATIVAS',
       subtitle: '¡Regalos personalizados para tu empresa y presupuesto!',
       icon: <Building2 size={24} className="text-luxury-black" />,
@@ -78,8 +71,8 @@ export default async function EnlacesPage() {
       title: 'SUSCRIPCIÓN DE FLORES',
       subtitle: '¡Recibe flores frescas en casa u oficina semanalmente!',
       icon: <CalendarCheck size={24} className="text-luxury-black" />,
-      href: `https://wa.me/${whatsappNumber}?text=Hola,%20me%20interesa%20la%20suscripción%20mensual.`,
-      external: true,
+      href: `/suscripcion`,
+      external: false,
     },
   ];
 

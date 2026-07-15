@@ -361,22 +361,22 @@ export default function CheckoutPage() {
                         <input
                           type="text"
                           placeholder="Número de Tarjeta (Mockup)"
-                          className="p-3 border border-gold-400/20 bg-[var(--background)] text-luxury-black rounded-lg text-xs"
+                          className="p-3 border border-[#2B1210]/35 bg-white text-neutral-950 placeholder:text-neutral-950 placeholder:font-bold rounded-lg text-xs outline-none focus:border-gold-500 transition-all"
                         />
                         <input
                           type="text"
                           placeholder="Titular de la Tarjeta"
-                          className="p-3 border border-gold-400/20 bg-[var(--background)] text-luxury-black rounded-lg text-xs"
+                          className="p-3 border border-[#2B1210]/35 bg-white text-neutral-950 placeholder:text-neutral-950 placeholder:font-bold rounded-lg text-xs outline-none focus:border-gold-500 transition-all"
                         />
                         <input
                           type="text"
                           placeholder="MM/AA"
-                          className="p-3 border border-gold-400/20 bg-[var(--background)] text-luxury-black rounded-lg text-xs"
+                          className="p-3 border border-[#2B1210]/35 bg-white text-neutral-950 placeholder:text-neutral-950 placeholder:font-bold rounded-lg text-xs outline-none focus:border-gold-500 transition-all"
                         />
                         <input
                           type="text"
                           placeholder="CVV"
-                          className="p-3 border border-gold-400/20 bg-[var(--background)] text-luxury-black rounded-lg text-xs"
+                          className="p-3 border border-[#2B1210]/35 bg-white text-neutral-950 placeholder:text-neutral-950 placeholder:font-bold rounded-lg text-xs outline-none focus:border-gold-500 transition-all"
                         />
                       </div>
                     </div>

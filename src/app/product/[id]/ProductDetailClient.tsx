@@ -197,7 +197,7 @@ export default function ProductDetailClient({
                 <label className="font-sans text-[9px] uppercase tracking-wider text-[#111111] block font-bold">Para:</label>
                 <input
                   type="text"
-                  placeholder="Nombre de Recipiente"
+                  placeholder="Nombre de quien recibe"
                   value={cardRecipient}
                   onChange={(e) => setCardRecipient(e.target.value)}
                   className="w-full text-xs p-2.5 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 focus:bg-white font-medium transition-all"

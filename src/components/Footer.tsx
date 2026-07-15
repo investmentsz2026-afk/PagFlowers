@@ -111,7 +111,7 @@ export default function Footer() {
           <ul className="space-y-3 text-xs">
             <li className="flex items-center gap-2">
               <MapPin size={16} className="text-gold-400 flex-shrink-0" />
-              <span>Av. Camino Real 456, San Isidro, Lima</span>
+              <span>Calle Monte Real 110, La Molina, Lima</span>
             </li>
             <li className="flex items-center gap-2">
               <Phone size={16} className="text-gold-400 flex-shrink-0" />

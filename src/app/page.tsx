@@ -585,8 +585,8 @@ export default async function HomePage() {
                     </div>
                     <div>
                       <h4 className="font-sans text-[10px] uppercase tracking-widest text-luxury-black/40 font-bold">Dirección</h4>
-                      <p className="font-sans text-xs text-luxury-black/80 font-medium mt-1">Av. Benavides 1234</p>
-                      <p className="font-sans text-xs text-luxury-black/50">Santiago de Surco, Lima</p>
+                      <p className="font-sans text-xs text-luxury-black/80 font-medium mt-1">Calle Monte Real 110</p>
+                      <p className="font-sans text-xs text-luxury-black/50">La Molina, Lima</p>
                     </div>
                   </div>
 
