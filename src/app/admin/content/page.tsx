@@ -43,6 +43,68 @@ interface OurStoryConfig {
   image: string;
 }
 
+interface PlanConfig {
+  id: string;
+  name: string;
+  price: number;
+  desc: string;
+  features: string[];
+}
+
+interface FlowerConfig {
+  id: string;
+  label: string;
+  desc: string;
+}
+
+const DEFAULT_PLANS: PlanConfig[] = [
+  {
+    id: 'petit',
+    name: 'Petit Rossy',
+    price: 75,
+    desc: 'Perfecto para mesas de noche, repisas o escritorios pequeños.',
+    features: [
+      'Florero de vidrio de cortesía en la 1° entrega',
+      'Arreglo compacto con flores frescas seleccionadas',
+      'Rotación semanal de variedades y colores',
+      'Envío a domicilio coordinado'
+    ]
+  },
+  {
+    id: 'classic',
+    name: 'Clásico Rossy',
+    price: 115,
+    desc: 'El tamaño ideal para salas, comedores y centros de mesa de hogar u oficina.',
+    features: [
+      'Florero premium de cortesía en la 1° entrega',
+      'Arreglo mediano de gran volumen y presencia',
+      'Selección de flores exclusivas (rosas, minirrosas, lirios)',
+      'Delivery incluido en zonas seleccionadas',
+      'Nutrientes florales en cada entrega'
+    ]
+  },
+  {
+    id: 'deluxe',
+    name: 'Rossy Imperial',
+    price: 175,
+    desc: 'Composiciones imponentes y sofisticadas de alta floreria para impactar.',
+    features: [
+      'Florero de lujo importado de cortesía en la 1° entrega',
+      'Diseño exclusivo con flores premium exóticas y tulipanes',
+      'Volumen imponente para recepciones o comedores grandes',
+      'Asesoría personalizada sobre el cuidado',
+      'Prioridad en el horario de reparto'
+    ]
+  }
+];
+
+const DEFAULT_FLOWERS: FlowerConfig[] = [
+  { id: 'MIX', label: 'Mix Sorpresa de Estación', desc: 'Variedad de flores frescas rotando cada semana.' },
+  { id: 'ROSAS', label: 'Ramos de Rosas Exclusivas', desc: 'Rosas rojas, rosadas o blancas de la más alta calidad.' },
+  { id: 'TULIPANES', label: 'Tulipanes y Girasoles', desc: 'Una combinación alegre y moderna llena de energía.' },
+  { id: 'PERSONALIZADO', label: 'Personalizado', desc: 'Elige tus flores preferidas en el recuadro de abajo.' }
+];
+
 const DEFAULT_STORY: OurStoryConfig = {
   title: 'NUESTRO ARTE, TU HISTORIA',
   subtitle: 'RossyFlowers Art',
@@ -71,14 +133,22 @@ export default function AdminContentPage() {
     stars: 5,
   });
 
+  // Subscription plan and flowers configuration states
+  const [subPlans, setSubPlans] = useState<PlanConfig[]>(DEFAULT_PLANS);
+  const [subFlowers, setSubFlowers] = useState<FlowerConfig[]>(DEFAULT_FLOWERS);
+  const [newFlowerLabel, setNewFlowerLabel] = useState('');
+  const [newFlowerDesc, setNewFlowerDesc] = useState('');
+
   // Load config
   useEffect(() => {
     async function loadContent() {
       try {
-        const [resStory, resPdf, resTestimonials] = await Promise.all([
+        const [resStory, resPdf, resTestimonials, resPlans, resFlowers] = await Promise.all([
           fetch('/api/content?key=our_story'),
           fetch('/api/content?key=monthly_catalog_pdf'),
-          fetch('/api/content?key=testimonials')
+          fetch('/api/content?key=testimonials'),
+          fetch('/api/content?key=subscription_plans'),
+          fetch('/api/content?key=subscription_flowers')
         ]);
         
         if (resStory.ok) {
@@ -101,6 +171,20 @@ export default function AdminContentPage() {
           const data = await resTestimonials.json();
           if (data && Array.isArray(data) && data.length > 0) {
             setTestimonials(data);
+          }
+        }
+
+        if (resPlans.ok) {
+          const data = await resPlans.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setSubPlans(data);
+          }
+        }
+
+        if (resFlowers.ok) {
+          const data = await resFlowers.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setSubFlowers(data);
           }
         }
       } catch (e) {
@@ -266,6 +350,16 @@ export default function AdminContentPage() {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ key: 'testimonials', value: testimonials }),
+        }),
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'subscription_plans', value: subPlans }),
+        }),
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'subscription_flowers', value: subFlowers }),
         })
       ];
 
@@ -601,6 +695,197 @@ export default function AdminContentPage() {
                     {editingIndex !== null ? 'Actualizar' : 'Agregar'}
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Subscription Plans Section */}
+          <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
+            <div className="flex items-center gap-2 border-b border-gold-800/10 pb-3">
+              <Sparkles size={16} className="text-gold-400" />
+              <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                Planes de Suscripción (CMS)
+              </h3>
+            </div>
+            
+            <div className="space-y-8 text-xs font-sans">
+              {subPlans.map((plan, idx) => (
+                <div key={plan.id} className="p-5 bg-neutral-900 border border-gold-800/10 rounded-xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-gold-800/5 pb-2">
+                    <span className="font-bold text-gold-400 uppercase tracking-widest text-[9px]">ID: {plan.id}</span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider text-neutral-400 block font-semibold">Nombre del Plan</label>
+                      <input
+                        type="text"
+                        value={plan.name}
+                        onChange={(e) => {
+                          const updated = [...subPlans];
+                          updated[idx].name = e.target.value;
+                          setSubPlans(updated);
+                        }}
+                        className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider text-neutral-400 block font-semibold">Precio por Entrega (S/)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={plan.price}
+                        onChange={(e) => {
+                          const updated = [...subPlans];
+                          updated[idx].price = parseFloat(e.target.value) || 0;
+                          setSubPlans(updated);
+                        }}
+                        className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 font-mono font-bold text-gold-400"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider text-neutral-400 block font-semibold">Descripción Corta</label>
+                      <input
+                        type="text"
+                        value={plan.desc}
+                        onChange={(e) => {
+                          const updated = [...subPlans];
+                          updated[idx].desc = e.target.value;
+                          setSubPlans(updated);
+                        }}
+                        className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-400 block font-semibold">
+                      Características (Escribe una por línea)
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={plan.features.join('\n')}
+                      onChange={(e) => {
+                        const updated = [...subPlans];
+                        updated[idx].features = e.target.value.split('\n').filter(line => line.trim());
+                        setSubPlans(updated);
+                      }}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 resize-none leading-relaxed"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Subscription Flower Preferences Section */}
+          <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
+            <div className="flex items-center gap-2 border-b border-gold-800/10 pb-3">
+              <Sparkles size={16} className="text-gold-400" />
+              <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                Personalización de Flores: Tipos y Preferencias (CMS)
+              </h3>
+            </div>
+
+            <div className="space-y-4 text-xs font-sans">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {subFlowers.map((flower, idx) => (
+                  <div key={flower.id} className="p-4 bg-neutral-900 border border-gold-800/10 rounded-xl flex justify-between items-start gap-4">
+                    <div className="space-y-2 flex-grow">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[10px] text-gold-400 uppercase tracking-widest">ID: {flower.id}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={flower.label}
+                          placeholder="Etiqueta / Nombre"
+                          onChange={(e) => {
+                            const updated = [...subFlowers];
+                            updated[idx].label = e.target.value;
+                            setSubFlowers(updated);
+                          }}
+                          className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 font-bold"
+                        />
+                        <input
+                          type="text"
+                          value={flower.desc}
+                          placeholder="Descripción breve"
+                          onChange={(e) => {
+                            const updated = [...subFlowers];
+                            updated[idx].desc = e.target.value;
+                            setSubFlowers(updated);
+                          }}
+                          className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-neutral-300 outline-none focus:border-gold-400 text-[11px]"
+                        />
+                      </div>
+                    </div>
+                    {flower.id !== 'MIX' && flower.id !== 'ROSAS' && flower.id !== 'PERSONALIZADO' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm('¿Desea eliminar esta preferencia floral?')) {
+                            setSubFlowers(prev => prev.filter(f => f.id !== flower.id));
+                          }
+                        }}
+                        className="p-1.5 bg-neutral-800 hover:bg-red-950/20 text-red-400 hover:text-red-300 rounded transition-colors cursor-pointer"
+                        title="Eliminar preferencia"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Add New Preference Option Form */}
+              <div className="p-5 bg-neutral-900 border border-dashed border-gold-800/25 rounded-xl space-y-4">
+                <span className="font-bold text-white uppercase tracking-wider text-[10px] text-gold-400 block">
+                  ➕ Agregar Nueva Opción de Flor
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-400 block font-semibold">Nombre / Etiqueta</label>
+                    <input
+                      type="text"
+                      placeholder="Ej. Girasoles Radiantes"
+                      value={newFlowerLabel}
+                      onChange={(e) => setNewFlowerLabel(e.target.value)}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-wider text-neutral-400 block font-semibold">Descripción Corta</label>
+                    <input
+                      type="text"
+                      placeholder="Ej. Envío rotativo de girasoles con follaje de temporada."
+                      value={newFlowerDesc}
+                      onChange={(e) => setNewFlowerDesc(e.target.value)}
+                      className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!newFlowerLabel || !newFlowerDesc) {
+                      alert('Por favor, rellene el nombre y la descripción para agregar.');
+                      return;
+                    }
+                    const newId = newFlowerLabel.toUpperCase().replace(/\s+/g, '_').slice(0, 15);
+                    const newFlower: FlowerConfig = {
+                      id: newId,
+                      label: newFlowerLabel,
+                      desc: newFlowerDesc
+                    };
+                    setSubFlowers(prev => [...prev, newFlower]);
+                    setNewFlowerLabel('');
+                    setNewFlowerDesc('');
+                  }}
+                  className="px-4 py-2 bg-neutral-800 hover:bg-gold-400 text-gold-400 hover:text-neutral-950 font-bold uppercase tracking-wider text-[10px] rounded transition-all cursor-pointer"
+                >
+                  Agregar Opción
+                </button>
               </div>
             </div>
           </div>

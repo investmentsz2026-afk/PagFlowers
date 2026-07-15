@@ -5,10 +5,24 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   CalendarCheck, ChevronLeft, Check, Sparkles, Phone, ShieldCheck, 
-  CreditCard, QrCode, Building, Award, CheckCircle2, AlertCircle, UploadCloud 
+  CreditCard, QrCode, Building, Award, CheckCircle2, AlertCircle 
 } from 'lucide-react';
 
-const PLANS = [
+interface PlanConfig {
+  id: string;
+  name: string;
+  price: number;
+  desc: string;
+  features: string[];
+}
+
+interface FlowerConfig {
+  id: string;
+  label: string;
+  desc: string;
+}
+
+const DEFAULT_PLANS: PlanConfig[] = [
   {
     id: 'petit',
     name: 'Petit Rossy',
@@ -19,8 +33,7 @@ const PLANS = [
       'Arreglo compacto con flores frescas seleccionadas',
       'Rotación semanal de variedades y colores',
       'Envío a domicilio coordinado'
-    ],
-    accent: 'border-gold-400/20'
+    ]
   },
   {
     id: 'classic',
@@ -33,9 +46,7 @@ const PLANS = [
       'Selección de flores exclusivas (rosas, minirrosas, lirios)',
       'Delivery incluido en zonas seleccionadas',
       'Nutrientes florales en cada entrega'
-    ],
-    accent: 'border-gold-400/40 bg-gold-400/5',
-    popular: true
+    ]
   },
   {
     id: 'deluxe',
@@ -48,12 +59,11 @@ const PLANS = [
       'Volumen imponente para recepciones o comedores grandes',
       'Asesoría personalizada sobre el cuidado',
       'Prioridad en el horario de reparto'
-    ],
-    accent: 'border-gold-500'
+    ]
   }
 ];
 
-const FLOWER_PREFERENCES = [
+const DEFAULT_FLOWERS: FlowerConfig[] = [
   { id: 'MIX', label: 'Mix Sorpresa de Estación', desc: 'Variedad de flores frescas rotando cada semana.' },
   { id: 'ROSAS', label: 'Ramos de Rosas Exclusivas', desc: 'Rosas rojas, rosadas o blancas de la más alta calidad.' },
   { id: 'TULIPANES', label: 'Tulipanes y Girasoles', desc: 'Una combinación alegre y moderna llena de energía.' },
@@ -63,6 +73,9 @@ const FLOWER_PREFERENCES = [
 function SuscripcionClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const [plans, setPlans] = useState<PlanConfig[]>(DEFAULT_PLANS);
+  const [flowerPreferences, setFlowerPreferences] = useState<FlowerConfig[]>(DEFAULT_FLOWERS);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -83,6 +96,35 @@ function SuscripcionClient() {
   const [error, setError] = useState('');
   const [successData, setSuccessData] = useState<any | null>(null);
 
+  // Fetch dynamic plans & flowers configuration from DB content keys
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const [resPlans, resFlowers] = await Promise.all([
+          fetch('/api/content?key=subscription_plans'),
+          fetch('/api/content?key=subscription_flowers')
+        ]);
+        
+        if (resPlans.ok) {
+          const data = await resPlans.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setPlans(data);
+          }
+        }
+        
+        if (resFlowers.ok) {
+          const data = await resFlowers.json();
+          if (data && Array.isArray(data) && data.length > 0) {
+            setFlowerPreferences(data);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load subscription configurations, using defaults.', e);
+      }
+    }
+    fetchConfig();
+  }, []);
+
   // Check URL params for Mercado Pago redirect returns
   useEffect(() => {
     const status = searchParams.get('status');
@@ -101,7 +143,7 @@ function SuscripcionClient() {
     }
   }, [searchParams]);
 
-  const selectedPlanObj = PLANS.find(p => p.id === formData.planId) || PLANS[1];
+  const selectedPlanObj = plans.find(p => p.id === formData.planId) || plans[1] || DEFAULT_PLANS[1];
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '51914060876';
 
   const handleSelectPlan = (id: string) => {
@@ -190,7 +232,7 @@ function SuscripcionClient() {
       successData.frequency === 'QUINCENAL' ? 'Quincenal' :
       'Mensual';
 
-    const prefObj = FLOWER_PREFERENCES.find(p => p.id === formData.flowerPreference);
+    const prefObj = flowerPreferences.find(p => p.id === formData.flowerPreference);
     const prefLabel = prefObj ? prefObj.label : 'Mix Sorpresa';
 
     let text = `*SOLICITUD DE SUSCRIPCIÓN - ROSSYFLOWERS*%0A%0A` +
@@ -235,8 +277,8 @@ function SuscripcionClient() {
           </p>
         </div>
 
-        <div className="bg-[var(--luxury-cream)]/50 border border-gold-400/15 rounded-3xl p-6 sm:p-8 max-w-md mx-auto text-left space-y-4 text-xs font-sans">
-          <h3 className="font-serif font-bold text-sm text-gold-700">Resumen de tu suscripción:</h3>
+        <div className="bg-white border border-[#2B1210]/20 rounded-3xl p-6 sm:p-8 max-w-md mx-auto text-left space-y-4 text-xs font-sans shadow-md">
+          <h3 className="font-serif font-bold text-sm text-[#2B1210]">Resumen de tu suscripción:</h3>
           <ul className="space-y-2 text-luxury-black/80">
             <li><strong>Plan:</strong> {successData.planName || selectedPlanObj.name}</li>
             <li><strong>Monto:</strong> S/ {successData.total.toFixed(2)} por entrega</li>
@@ -279,54 +321,55 @@ function SuscripcionClient() {
             <Sparkles size={16} className="text-gold-500" /> 1. Elige tu Plan de Flores
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-stretch">
-            {PLANS.map((plan) => (
-              <div 
-                key={plan.id}
-                onClick={() => handleSelectPlan(plan.id)}
-                className={`rounded-2xl border p-6 flex flex-col justify-between relative transition-all duration-300 cursor-pointer hover:shadow-md ${
-                  plan.accent
-                } ${
-                  formData.planId === plan.id 
-                    ? 'ring-2 ring-gold-500 bg-gold-400/5' 
-                    : 'opacity-90 hover:opacity-100'
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute -top-2.5 right-4 bg-gold-400 text-neutral-950 font-sans text-[7px] uppercase tracking-widest font-extrabold py-1 px-3 rounded-full shadow">
-                    Popular
-                  </span>
-                )}
-                
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-serif text-sm font-bold uppercase tracking-wider">{plan.name}</h3>
-                    <p className="text-[10px] text-luxury-black/50 mt-1 leading-relaxed">{plan.desc}</p>
-                  </div>
+            {plans.map((plan) => {
+              const isSelected = formData.planId === plan.id;
+              return (
+                <div 
+                  key={plan.id}
+                  onClick={() => handleSelectPlan(plan.id)}
+                  className={`rounded-2xl border-2 p-6 flex flex-col justify-between relative transition-all duration-300 cursor-pointer shadow-md bg-white text-[#2B1210] ${
+                    isSelected 
+                      ? 'border-[#F46261] ring-4 ring-[#F46261]/25 scale-[1.02] bg-[#F46261]/5' 
+                      : 'border-[#2B1210]/20 hover:border-gold-500 hover:scale-[1.01]'
+                  }`}
+                >
+                  {plan.id === 'classic' && (
+                    <span className="absolute -top-3 right-4 bg-gold-400 text-neutral-950 font-sans text-[7px] uppercase tracking-widest font-extrabold py-1 px-3 rounded-full shadow">
+                      Popular
+                    </span>
+                  )}
                   
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-[10px] font-sans font-bold">S/</span>
-                    <span className="text-2xl font-serif font-bold text-gold-600">{plan.price}</span>
-                    <span className="text-[9px] text-luxury-black/40 font-medium">/ entrega</span>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-[#2B1210]">{plan.name}</h3>
+                      <p className="text-[10px] text-neutral-600 mt-1 leading-relaxed">{plan.desc}</p>
+                    </div>
+                    
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="text-[10px] font-sans font-bold">S/</span>
+                      <span className="text-2xl font-serif font-bold text-gold-700">{plan.price}</span>
+                      <span className="text-[9px] text-neutral-500 font-medium">/ entrega</span>
+                    </div>
+
+                    <hr className="border-[#2B1210]/10" />
+
+                    <ul className="space-y-2 text-[10px] text-neutral-700">
+                      {plan.features.map((feat, i) => (
+                        <li key={i} className="flex gap-1.5">
+                          <Check size={12} className="text-gold-600 flex-shrink-0 mt-0.5" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-
-                  <hr className="border-gold-400/10" />
-
-                  <ul className="space-y-2 text-[10px] text-luxury-black/80">
-                    {plan.features.slice(0, 3).map((feat, i) => (
-                      <li key={i} className="flex gap-1.5">
-                        <Check size={12} className="text-gold-500 flex-shrink-0 mt-0.5" />
-                        <span className="line-clamp-1">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* 2. Delivery Coordinate Info */}
-        <div className="space-y-4 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="space-y-4 bg-white border border-[#2B1210]/20 rounded-3xl p-6 sm:p-8 shadow-md">
           <h2 className="font-serif text-base text-luxury-black font-semibold border-b border-gold-400/10 pb-2">
             2. Datos del Suscriptor y Entrega
           </h2>
@@ -339,7 +382,7 @@ function SuscripcionClient() {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 transition-all"
+                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] placeholder:text-[#2B1210]/40 outline-none focus:border-gold-500 transition-all font-medium"
                 placeholder="Ej. Alessandra De la Fuente"
               />
             </div>
@@ -351,7 +394,7 @@ function SuscripcionClient() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 transition-all"
+                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] placeholder:text-[#2B1210]/40 outline-none focus:border-gold-500 transition-all font-medium"
                 placeholder="Ej. 914060876"
               />
             </div>
@@ -363,7 +406,7 @@ function SuscripcionClient() {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 transition-all"
+                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] placeholder:text-[#2B1210]/40 outline-none focus:border-gold-500 transition-all font-medium"
                 placeholder="Ej. alessandra@correo.com"
               />
             </div>
@@ -378,7 +421,7 @@ function SuscripcionClient() {
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 transition-all"
+                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] placeholder:text-[#2B1210]/40 outline-none focus:border-gold-500 transition-all font-medium"
                 placeholder="Ej. Calle Monte Real 110, Dpto 302"
               />
             </div>
@@ -390,7 +433,7 @@ function SuscripcionClient() {
                 name="district"
                 value={formData.district}
                 onChange={handleInputChange}
-                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 transition-all"
+                className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] placeholder:text-[#2B1210]/40 outline-none focus:border-gold-500 transition-all font-medium"
                 placeholder="Ej. La Molina"
               />
             </div>
@@ -402,7 +445,7 @@ function SuscripcionClient() {
               name="frequency"
               value={formData.frequency}
               onChange={handleInputChange}
-              className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] outline-none focus:border-gold-500 transition-all cursor-pointer"
+              className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] outline-none focus:border-gold-500 transition-all cursor-pointer font-medium"
             >
               <option value="SEMANAL">Semanal (Una entrega por semana - 4 veces al mes)</option>
               <option value="QUINCENAL">Quincenal (Cada 15 días - 2 veces al mes)</option>
@@ -412,25 +455,28 @@ function SuscripcionClient() {
         </div>
 
         {/* 3. Flower Preferences Selector */}
-        <div className="space-y-4 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="space-y-4 bg-white border border-[#2B1210]/20 rounded-3xl p-6 sm:p-8 shadow-md">
           <h2 className="font-serif text-base text-luxury-black font-semibold border-b border-gold-400/10 pb-2">
             3. Personaliza tus Flores
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {FLOWER_PREFERENCES.map((pref) => (
-              <div 
-                key={pref.id}
-                onClick={() => setFormData(prev => ({ ...prev, flowerPreference: pref.id }))}
-                className={`p-4 rounded-xl border flex flex-col justify-center gap-1 cursor-pointer transition-all ${
-                  formData.flowerPreference === pref.id
-                    ? 'border-gold-500 bg-gold-400/10 font-bold scale-[1.01] shadow-sm'
-                    : 'border-gold-400/10 hover:border-gold-400/30 text-luxury-black/70 hover:text-luxury-black'
-                }`}
-              >
-                <span className="font-serif text-xs uppercase tracking-wider text-gold-700">{pref.label}</span>
-                <span className="font-sans text-[10px] text-luxury-black/50 leading-relaxed font-light">{pref.desc}</span>
-              </div>
-            ))}
+            {flowerPreferences.map((pref) => {
+              const isSelected = formData.flowerPreference === pref.id;
+              return (
+                <div 
+                  key={pref.id}
+                  onClick={() => setFormData(prev => ({ ...prev, flowerPreference: pref.id }))}
+                  className={`p-4 rounded-xl border-2 flex flex-col justify-center gap-1 cursor-pointer transition-all bg-white text-neutral-900 ${
+                    isSelected
+                      ? 'border-[#F46261] bg-[#F46261]/5 font-bold scale-[1.01] shadow-sm'
+                      : 'border-[#2B1210]/15 hover:border-gold-400'
+                  }`}
+                >
+                  <span className="font-serif text-xs uppercase tracking-wider text-gold-700">{pref.label}</span>
+                  <span className="font-sans text-[10px] text-neutral-500 leading-relaxed font-light">{pref.desc}</span>
+                </div>
+              );
+            })}
           </div>
 
           <div className="space-y-1 text-xs">
@@ -441,13 +487,13 @@ function SuscripcionClient() {
               value={formData.customDetails}
               onChange={handleInputChange}
               placeholder="Ej: Prefiero rosas rojas en cada entrega, sin tulipanes amarillos. Quiero florero solo de cerámica..."
-              className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white/80 text-[#111111] placeholder:text-[#2B1210]/55 outline-none focus:border-gold-500 transition-all resize-none"
+              className="w-full text-xs p-3 rounded-lg border border-[#2B1210]/35 bg-white text-[#111111] placeholder:text-[#2B1210]/40 outline-none focus:border-gold-500 transition-all resize-none font-medium"
             />
           </div>
         </div>
 
         {/* 4. Payment Gateways Selector */}
-        <div className="space-y-6 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="space-y-6 bg-white border border-[#2B1210]/20 rounded-3xl p-6 sm:p-8 shadow-md">
           <h2 className="font-serif text-base text-luxury-black font-semibold border-b border-gold-400/10 pb-2">
             4. Método de Pago Seguro
           </h2>
@@ -465,7 +511,7 @@ function SuscripcionClient() {
                 className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
                   formData.paymentMethod === pay.id
                     ? 'border-gold-500 bg-gold-400 text-[#0a192f] shadow-md font-bold scale-105'
-                    : 'border-gold-400/10 hover:border-gold-400/30 text-luxury-black/60 hover:text-luxury-black'
+                    : 'border-gold-400/20 hover:border-gold-400/40 text-luxury-black/60 hover:text-luxury-black bg-white'
                 }`}
               >
                 {pay.icon}
@@ -516,7 +562,7 @@ function SuscripcionClient() {
                 <p className="text-luxury-black/60 max-w-md mx-auto leading-relaxed">
                   Escanea el código QR de William Santana desde Yape e ingresa el monto del primer envío de <strong>S/ {selectedPlanObj.price.toFixed(2)}</strong>.
                 </p>
-                <div className="flex flex-col items-center justify-center p-5 bg-[var(--background)] border border-gold-400/10 rounded-xl w-64 mx-auto shadow-sm space-y-3">
+                <div className="flex flex-col items-center justify-center p-5 bg-white border border-gold-400/10 rounded-xl w-64 mx-auto shadow-sm space-y-3">
                   <div className="w-48 h-48 bg-white flex items-center justify-center border border-dashed border-gold-400/30 rounded overflow-hidden">
                     <img src="/images/qr.jpeg" alt="Yape QR" className="w-full h-full object-contain" />
                   </div>
@@ -536,7 +582,7 @@ function SuscripcionClient() {
                 <p className="text-luxury-black/60 max-w-md mx-auto leading-relaxed">
                   Realiza un Plin por <strong>S/ {selectedPlanObj.price.toFixed(2)}</strong> al número telefónico de William Santana.
                 </p>
-                <div className="flex flex-col items-center justify-center p-6 bg-[var(--background)] border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-2">
+                <div className="flex flex-col items-center justify-center p-6 bg-white border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-2">
                   <span className="bg-emerald-500 text-white font-bold text-[8px] uppercase tracking-widest px-2.5 py-0.5 rounded-full">Plin Habilitado</span>
                   <div className="space-y-1">
                     <span className="text-[11px] font-bold text-luxury-black block">Titular: William Santana Torres</span>
@@ -552,12 +598,12 @@ function SuscripcionClient() {
                   Cuentas de Transferencia Bancaria
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-1">
+                  <div className="p-4 bg-white border border-gold-400/10 rounded-lg space-y-1 shadow-sm">
                     <span className="font-bold block text-gold-700">BCP Soles</span>
                     <p className="text-luxury-black/80 font-mono font-semibold">19395917712075</p>
                     <span className="text-[9px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00219319591771207511</span>
                   </div>
-                  <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-1">
+                  <div className="p-4 bg-white border border-gold-400/10 rounded-lg space-y-1 shadow-sm">
                     <span className="font-bold block text-gold-700">Interbank Soles</span>
                     <p className="text-luxury-black/80 font-mono font-semibold">2903370348927</p>
                     <span className="text-[9px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00329001337034892747</span>
@@ -568,7 +614,7 @@ function SuscripcionClient() {
 
             {/* Receipt uploader field for non-card methods */}
             {formData.paymentMethod !== 'TARJETA' && (
-              <div className="mt-6 p-4 border border-gold-400/20 bg-[var(--background)] rounded-lg">
+              <div className="mt-6 p-4 border border-gold-400/20 bg-white rounded-lg shadow-sm">
                 <label className="font-sans text-[10px] uppercase tracking-wider text-luxury-black/80 font-bold block mb-2">
                   Sube tu Comprobante de Pago *
                 </label>
@@ -587,28 +633,28 @@ function SuscripcionClient() {
 
       {/* Summary / Cart column - 4 cols */}
       <div className="lg:col-span-4 space-y-6">
-        <div className="bg-[var(--background)] border border-gold-400/10 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="bg-white border border-[#2B1210]/20 rounded-3xl p-6 sm:p-8 shadow-md space-y-6 text-[#2B1210]">
           <h3 className="font-serif text-lg text-luxury-black tracking-widest">DETALLE PLAN</h3>
           
           <div className="space-y-3 font-sans text-xs">
-            <div className="flex justify-between text-luxury-black/60">
+            <div className="flex justify-between text-neutral-600">
               <span>Plan Elegido</span>
-              <span className="font-bold text-luxury-black">{selectedPlanObj.name}</span>
+              <span className="font-bold text-neutral-900">{selectedPlanObj.name}</span>
             </div>
-            <div className="flex justify-between text-luxury-black/60">
+            <div className="flex justify-between text-neutral-600">
               <span>Frecuencia</span>
-              <span className="font-bold text-luxury-black uppercase">
+              <span className="font-bold text-neutral-900 uppercase">
                 {formData.frequency === 'SEMANAL' ? 'Semanal' : formData.frequency === 'QUINCENAL' ? 'Quincenal' : 'Mensual'}
               </span>
             </div>
-            <div className="flex justify-between text-luxury-black/60">
+            <div className="flex justify-between text-neutral-600">
               <span>Preferencia Flores</span>
-              <span className="font-bold text-luxury-black">
-                {FLOWER_PREFERENCES.find(p => p.id === formData.flowerPreference)?.label || 'Mix Sorpresa'}
+              <span className="font-bold text-neutral-900">
+                {flowerPreferences.find(p => p.id === formData.flowerPreference)?.label || 'Mix Sorpresa'}
               </span>
             </div>
-            <hr className="border-gold-400/10" />
-            <div className="flex justify-between items-center text-luxury-black">
+            <hr className="border-[#2B1210]/10" />
+            <div className="flex justify-between items-center text-neutral-900">
               <span className="text-sm font-bold">Monto por Entrega</span>
               <span className="font-serif text-xl font-bold">S/ {selectedPlanObj.price.toFixed(2)}</span>
             </div>
@@ -630,12 +676,12 @@ function SuscripcionClient() {
           </button>
         </div>
 
-        <div className="bg-[var(--background)] border border-gold-400/10 rounded-3xl p-6 shadow-sm space-y-4 text-xs font-sans">
+        <div className="bg-white border border-[#2B1210]/20 rounded-3xl p-6 shadow-md space-y-4 text-xs font-sans text-neutral-700">
           <div className="flex items-center gap-2 text-gold-600 font-serif text-sm">
             <Award size={18} />
             <span>Exclusividad y Garantía</span>
           </div>
-          <p className="text-[10px] text-luxury-black/50 leading-relaxed">
+          <p className="text-[10px] text-neutral-500 leading-relaxed">
             RossyFlowers garantiza la entrega de flores de invernadero frescas de primera calidad. Puedes pausar o cancelar en cualquier momento de forma gratuita.
           </p>
         </div>
@@ -671,31 +717,31 @@ export default function SuscripcionPage() {
         </div>
 
         {/* Benefits Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="p-6 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-2xl space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 text-neutral-800">
+          <div className="p-6 bg-white border border-[#2B1210]/20 rounded-2xl space-y-3 shadow-md">
             <div className="w-10 h-10 rounded-xl bg-gold-400/10 flex items-center justify-center text-gold-600">
               <Sparkles size={20} />
             </div>
-            <h3 className="font-serif font-bold text-base">Florero Gratis de Bienvenida</h3>
-            <p className="text-xs text-luxury-black/60 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-[#2B1210]">Florero Gratis de Bienvenida</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed">
               En tu primera entrega te obsequiamos un florero de vidrio de diseño adaptado a tu plan para que tus flores luzcan perfectas desde el inicio.
             </p>
           </div>
-          <div className="p-6 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-2xl space-y-3">
+          <div className="p-6 bg-white border border-[#2B1210]/20 rounded-2xl space-y-3 shadow-md">
             <div className="w-10 h-10 rounded-xl bg-gold-400/10 flex items-center justify-center text-gold-600">
               <CalendarCheck size={20} />
             </div>
-            <h3 className="font-serif font-bold text-base">Rotación de Flores</h3>
-            <p className="text-xs text-luxury-black/60 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-[#2B1210]">Rotación de Flores</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed">
               Cada entrega es una sorpresa. Alternamos rosas premium, tulipanes holandeses, orquídeas imperiales y follaje exótico de invernadero.
             </p>
           </div>
-          <div className="p-6 bg-[var(--luxury-cream)]/50 border border-gold-400/10 rounded-2xl space-y-3">
+          <div className="p-6 bg-white border border-[#2B1210]/20 rounded-2xl space-y-3 shadow-md">
             <div className="w-10 h-10 rounded-xl bg-gold-400/10 flex items-center justify-center text-gold-600">
               <ShieldCheck size={20} />
             </div>
-            <h3 className="font-serif font-bold text-base">Sin Contratos de Permanencia</h3>
-            <p className="text-xs text-luxury-black/60 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-[#2B1210]">Sin Contratos de Permanencia</h3>
+            <p className="text-xs text-neutral-600 leading-relaxed">
               Pausa, cambia de tamaño de plan, modifica la dirección de entrega o cancela tu suscripción cuando lo desees directamente por WhatsApp.
             </p>
           </div>
