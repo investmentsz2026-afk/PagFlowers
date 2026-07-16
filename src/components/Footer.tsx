@@ -32,7 +32,7 @@ export default function Footer() {
             <div>
               <h4 className="font-serif text-gold-200 text-sm tracking-widest uppercase mb-1">Garantía RossyFlowers</h4>
               <p className="text-xs text-[#8C8C8C] leading-relaxed">
-                Cuidado al detalle, empaque premium acolchado y confirmación fotográfica antes del despacho.
+                Cuidado al detalle, presentación exclusiva de alta costura floral y confirmación fotográfica antes del despacho.
               </p>
             </div>
           </div>
@@ -58,14 +58,6 @@ export default function Footer() {
           <p className="text-xs leading-relaxed text-[#8C8C8C]">
             La florería boutique líder en Lima, especializada en momentos especiales y diseño floral contemporáneo de lujo. Redefiniendo el arte de regalar emociones.
           </p>
-          <div className="pt-2 flex flex-wrap gap-2">
-            {/* Visual Payment Badges */}
-            <span className="px-2 py-1 bg-[#1A1A1A] text-[9px] text-gold-300 border border-gold-800/30 rounded font-semibold tracking-wider">VISA</span>
-            <span className="px-2 py-1 bg-[#1A1A1A] text-[9px] text-gold-300 border border-gold-800/30 rounded font-semibold tracking-wider">MC</span>
-            <span className="px-2 py-1 bg-[#1A1A1A] text-[9px] text-gold-300 border border-gold-800/30 rounded font-semibold tracking-wider">AMEX</span>
-            <span className="px-2 py-1 bg-[#1A1A1A] text-[9px] text-gold-300 border border-gold-800/30 rounded font-semibold tracking-wider">YAPE</span>
-            <span className="px-2 py-1 bg-[#1A1A1A] text-[9px] text-gold-300 border border-gold-800/30 rounded font-semibold tracking-wider">PLIN</span>
-          </div>
         </div>
 
         {/* Quick Links */}

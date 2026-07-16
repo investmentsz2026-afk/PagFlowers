@@ -47,13 +47,6 @@ export default async function EnlacesPage() {
       external: true,
     },
     {
-      title: 'NACIMIENTOS',
-      subtitle: '¡Celebra la llegada de un nuevo bebé con nosotros!',
-      icon: <Heart size={24} className="text-[#F46261]" />,
-      href: `https://wa.me/${whatsappNumber}?text=Hola,%20busco%20información%20sobre%20arreglos%20para%20nacimientos.`,
-      external: true,
-    },
-    {
       title: 'GLOBOS Y COMPLEMENTOS',
       subtitle: 'Personaliza tus arreglos con detalles únicos.',
       icon: <Heart size={24} className="text-[#F46261]" />,

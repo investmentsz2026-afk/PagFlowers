@@ -137,7 +137,7 @@ export default async function HomePage() {
             <MotionView direction="up" delay={0.3} className="space-y-3 border-l border-white/20 dark:border-gold-400/10">
               <span className="text-white dark:text-gold-500 font-semibold font-serif text-3xl tracking-widest block drop-shadow-sm dark:drop-shadow-none">PREMIUM</span>
               <h3 className="font-sans text-xs uppercase tracking-wider text-white dark:text-luxury-black font-bold drop-shadow-sm dark:drop-shadow-none">Tarjetas de Autor</h3>
-              <p className="font-sans text-xs text-white/90 dark:text-luxury-black/50 px-4">Dedicatorias de lujo lacradas con cera artesanal</p>
+              <p className="font-sans text-xs text-white/90 dark:text-luxury-black/50 px-4">Tarjetas elegantes con sobre de diseño exclusivo</p>
             </MotionView>
             <MotionView direction="up" delay={0.4} className="space-y-3 border-l border-white/20 dark:border-gold-400/10">
               <span className="text-white dark:text-gold-500 font-semibold font-serif text-3xl tracking-widest block drop-shadow-sm dark:drop-shadow-none">VIP PHOTO</span>

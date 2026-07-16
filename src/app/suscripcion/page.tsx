@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   CalendarCheck, ChevronLeft, Check, Sparkles, Phone, ShieldCheck, 
-  CreditCard, QrCode, Building, Award, CheckCircle2, AlertCircle 
+  CreditCard, QrCode, Building, Award, CheckCircle2, AlertCircle, Copy 
 } from 'lucide-react';
 
 interface PlanConfig {
@@ -95,6 +95,13 @@ function SuscripcionClient() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [successData, setSuccessData] = useState<any | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopyText = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldId);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   // Fetch dynamic plans & flowers configuration from DB content keys
   useEffect(() => {
@@ -577,13 +584,15 @@ function SuscripcionClient() {
             {formData.paymentMethod === 'PLIN' && (
               <div className="space-y-4 text-center font-sans text-xs">
                 <h4 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600">
-                  Pago con Plin
+                  Pago con Plin QR
                 </h4>
                 <p className="text-luxury-black/60 max-w-md mx-auto leading-relaxed">
-                  Realiza un Plin por <strong>S/ {selectedPlanObj.price.toFixed(2)}</strong> al número telefónico de William Santana.
+                  Escanea el código QR de William Santana desde Plin o realiza un Plin por <strong>S/ {selectedPlanObj.price.toFixed(2)}</strong> al número de celular abajo, y sube tu comprobante.
                 </p>
-                <div className="flex flex-col items-center justify-center p-6 bg-white border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-2">
-                  <span className="bg-emerald-500 text-white font-bold text-[8px] uppercase tracking-widest px-2.5 py-0.5 rounded-full">Plin Habilitado</span>
+                <div className="flex flex-col items-center justify-center p-5 bg-white border border-gold-400/10 rounded-xl w-64 mx-auto shadow-sm space-y-3">
+                  <div className="w-48 h-48 bg-white flex items-center justify-center border border-dashed border-gold-400/30 rounded overflow-hidden">
+                    <img src="/images/plin.jpeg" alt="Plin QR" className="w-full h-full object-contain" />
+                  </div>
                   <div className="space-y-1">
                     <span className="text-[11px] font-bold text-luxury-black block">Titular: William Santana Torres</span>
                     <span className="text-[11px] text-luxury-black/70 block">Celular: <strong className="text-neutral-950 font-extrabold text-xs">914 060 876</strong></span>
@@ -598,15 +607,55 @@ function SuscripcionClient() {
                   Cuentas de Transferencia Bancaria
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  <div className="p-4 bg-white border border-gold-400/10 rounded-lg space-y-1 shadow-sm">
+                  <div className="p-4 bg-white border border-gold-400/10 rounded-lg space-y-2 shadow-sm relative">
                     <span className="font-bold block text-gold-700">BCP Soles</span>
-                    <p className="text-luxury-black/80 font-mono font-semibold">19395917712075</p>
-                    <span className="text-[9px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00219319591771207511</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-luxury-black/80 font-mono font-semibold">19395917712075</p>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText('19395917712075', 'bcp_acc')}
+                        className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer animate-fadeIn"
+                        title="Copiar número de cuenta"
+                      >
+                        {copiedField === 'bcp_acc' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[9px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00219319591771207511</span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText('00219319591771207511', 'bcp_cci')}
+                        className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer animate-fadeIn"
+                        title="Copiar CCI"
+                      >
+                        {copiedField === 'bcp_cci' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      </button>
+                    </div>
                   </div>
-                  <div className="p-4 bg-white border border-gold-400/10 rounded-lg space-y-1 shadow-sm">
+                  <div className="p-4 bg-white border border-gold-400/10 rounded-lg space-y-2 shadow-sm relative">
                     <span className="font-bold block text-gold-700">Interbank Soles</span>
-                    <p className="text-luxury-black/80 font-mono font-semibold">2903370348927</p>
-                    <span className="text-[9px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00329001337034892747</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-luxury-black/80 font-mono font-semibold">2903370348927</p>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText('2903370348927', 'ib_acc')}
+                        className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer animate-fadeIn"
+                        title="Copiar número de cuenta"
+                      >
+                        {copiedField === 'ib_acc' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[9px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00329001337034892747</span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText('00329001337034892747', 'ib_cci')}
+                        className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer animate-fadeIn"
+                        title="Copiar CCI"
+                      >
+                        {copiedField === 'ib_cci' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

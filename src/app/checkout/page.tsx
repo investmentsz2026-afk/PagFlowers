@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
-import { Truck, CreditCard, QrCode, Building, Award, ShieldAlert, Sparkles } from 'lucide-react';
+import { Truck, CreditCard, QrCode, Building, Award, ShieldAlert, Sparkles, Copy, Check } from 'lucide-react';
 
 interface District {
   name: string;
@@ -27,6 +27,13 @@ export default function CheckoutPage() {
   // Loading state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [districts, setDistricts] = useState<District[]>([]);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopyText = (text: string, fieldId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldId);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   // Checkout Form State
   const [formData, setFormData] = useState({
@@ -407,18 +414,20 @@ export default function CheckoutPage() {
                   {formData.paymentMethod === 'PLIN' && (
                     <div className="space-y-4 text-center font-sans text-xs">
                       <h4 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600">
-                        Pago Instantáneo con Plin
+                        Pago Instantáneo con Plin QR
                       </h4>
                       <p className="text-luxury-black/60 max-w-md mx-auto leading-relaxed">
-                        Transfiere el monto total de <strong>S/ {cartTotal.toFixed(2)}</strong> vía Plin al número de celular abajo, y sube tu comprobante al finalizar la compra.
+                        Escanea el código QR desde tu aplicación de Plin, ingresa el monto total de <strong>S/ {cartTotal.toFixed(2)}</strong>, y sube tu comprobante al finalizar la compra.
                       </p>
                       
-                      {/* Plin Text Box without QR */}
-                      <div className="flex flex-col items-center justify-center p-6 bg-[var(--background)] border border-gold-400/10 rounded-xl max-w-xs mx-auto shadow-sm space-y-2">
-                        <span className="bg-emerald-500 text-white font-bold text-[8px] uppercase tracking-widest px-2.5 py-0.5 rounded-full">Plin Habilitado</span>
+                      {/* Real QR Code Box */}
+                      <div className="flex flex-col items-center justify-center p-5 bg-[var(--background)] border border-gold-400/10 rounded-xl w-64 mx-auto shadow-sm space-y-3">
+                        <div className="w-56 h-56 bg-white flex items-center justify-center relative border border-dashed border-gold-400/30 rounded overflow-hidden">
+                          <img src="/images/plin.jpeg" alt="Código QR Plin" className="w-full h-full object-contain" />
+                        </div>
                         <div className="space-y-1">
                           <span className="text-xs font-bold text-luxury-black block">Titular: William Santana Torres</span>
-                          <span className="text-xs text-luxury-black/70 block">Celular: <strong className="text-neutral-950 dark:text-white font-extrabold text-sm font-mono">914 060 876</strong></span>
+                          <span className="text-xs text-luxury-black/70 block">Celular: <strong className="text-neutral-950 dark:text-white font-extrabold text-sm">914 060 876</strong></span>
                         </div>
                       </div>
                     </div>
@@ -433,15 +442,55 @@ export default function CheckoutPage() {
                         Transfiere el monto total a cualquiera de nuestras cuentas corrientes corporativas e ingresa el número de operación y comprobante en el enlace de WhatsApp final.
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs">
-                        <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-1">
+                        <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-2 relative">
                           <span className="font-bold block text-gold-700">BCP Soles</span>
-                          <p className="text-luxury-black/80 font-mono font-semibold">19395917712075</p>
-                          <span className="text-[10px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00219319591771207511</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-luxury-black/80 font-mono font-semibold">19395917712075</p>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText('19395917712075', 'bcp_acc')}
+                              className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer"
+                              title="Copiar número de cuenta"
+                            >
+                              {copiedField === 'bcp_acc' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00219319591771207511</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText('00219319591771207511', 'bcp_cci')}
+                              className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer"
+                              title="Copiar CCI"
+                            >
+                              {copiedField === 'bcp_cci' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                            </button>
+                          </div>
                         </div>
-                        <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-1">
+                        <div className="p-4 bg-[var(--background)] border border-gold-400/10 rounded-lg space-y-2 relative">
                           <span className="font-bold block text-gold-700">Interbank Soles</span>
-                          <p className="text-luxury-black/80 font-mono font-semibold">2903370348927</p>
-                          <span className="text-[10px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00329001337034892747</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-luxury-black/80 font-mono font-semibold">2903370348927</p>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText('2903370348927', 'ib_acc')}
+                              className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer"
+                              title="Copiar número de cuenta"
+                            >
+                              {copiedField === 'ib_acc' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] text-luxury-black/40 font-semibold text-gold-600">CCI: 00329001337034892747</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText('00329001337034892747', 'ib_cci')}
+                              className="p-1 hover:bg-gold-500/10 rounded text-gold-600 transition-all cursor-pointer"
+                              title="Copiar CCI"
+                            >
+                              {copiedField === 'ib_cci' ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
