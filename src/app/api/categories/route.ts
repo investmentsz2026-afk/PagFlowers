@@ -1,9 +1,20 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const complement = searchParams.get('complement');
+
+    const where: any = {};
+    if (complement === 'true') {
+      where.isComplement = true;
+    } else {
+      where.isComplement = { not: true };
+    }
+
     const categories = await prisma.category.findMany({
+      where,
       orderBy: { name: 'asc' },
     });
     return NextResponse.json(categories);
@@ -15,7 +26,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, slug, description, isActive } = body;
+    const { name, slug, description, isActive, isComplement } = body;
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -30,6 +41,7 @@ export async function POST(request: Request) {
         slug,
         description,
         isActive: isActive !== undefined ? isActive : true,
+        isComplement: !!isComplement,
       },
     });
 

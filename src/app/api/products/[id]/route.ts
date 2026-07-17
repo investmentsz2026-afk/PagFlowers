@@ -65,6 +65,7 @@ export async function PUT(
       tags,
       isExclusive,
       isFeatured,
+      isComplement,
     } = body;
 
     const existingProduct = await prisma.product.findUnique({
@@ -87,6 +88,7 @@ export async function PUT(
     if (tags !== undefined) dataToUpdate.tags = tags;
     if (isExclusive !== undefined) dataToUpdate.isExclusive = !!isExclusive;
     if (isFeatured !== undefined) dataToUpdate.isFeatured = !!isFeatured;
+    if (isComplement !== undefined) dataToUpdate.isComplement = !!isComplement;
 
     const updatedProduct = await prisma.product.update({
       where: { id: productId },
@@ -96,6 +98,7 @@ export async function PUT(
     // Clear caches so the homepage and catalog page reflect the change immediately
     revalidatePath('/');
     revalidatePath('/catalog');
+    revalidatePath('/complements');
 
     return NextResponse.json(updatedProduct);
   } catch (error: any) {
@@ -140,6 +143,7 @@ export async function DELETE(
     // Clear caches so the homepage and catalog page reflect the change immediately
     revalidatePath('/');
     revalidatePath('/catalog');
+    revalidatePath('/complements');
 
     return NextResponse.json({ message: 'Producto eliminado exitosamente.' });
   } catch (error: any) {

@@ -87,12 +87,12 @@ export default function ProductDetailClient({
       {/* Main product configuration */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         {/* Images Column */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="aspect-[4/5] bg-[var(--background)] border border-gold-400/10 rounded-2xl overflow-hidden shadow-md">
+        <div className="lg:col-span-7 space-y-4 animate-fadeIn">
+          <div className="aspect-[4/5] bg-white border border-[#2B1210]/15 rounded-2xl overflow-hidden shadow-md flex items-center justify-center p-6">
             <img
               src={product.images[activeImageIdx]}
               alt={product.name}
-              className="w-full h-full object-cover transition-all"
+              className="max-w-full max-h-full object-contain transition-all duration-300"
             />
           </div>
           {/* Thumbnails */}
@@ -102,11 +102,13 @@ export default function ProductDetailClient({
                 <button
                   key={idx}
                   onClick={() => setActiveImageIdx(idx)}
-                  className={`w-20 h-20 rounded-lg overflow-hidden bg-[var(--background)] border transition-all ${
-                    activeImageIdx === idx ? 'border-[#F46261] ring-2 ring-[#F46261]/20 scale-105' : 'border-neutral-200 dark:border-neutral-800 opacity-70 hover:opacity-100 hover:border-[#F46261]/50'
+                  className={`w-20 h-20 rounded-lg overflow-hidden bg-white border transition-all flex items-center justify-center p-2 ${
+                    activeImageIdx === idx 
+                      ? 'border-[#F46261] ring-2 ring-[#F46261]/25 scale-105' 
+                      : 'border-neutral-200 dark:border-neutral-800 opacity-70 hover:opacity-100 hover:border-[#F46261]/50'
                   }`}
                 >
-                  <img src={img} alt={`Imagen ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`Imagen ${idx + 1}`} className="max-w-full max-h-full object-contain" />
                 </button>
               ))}
             </div>

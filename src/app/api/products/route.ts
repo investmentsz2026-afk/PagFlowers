@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search');
     const isFeatured = searchParams.get('featured');
     const isExclusive = searchParams.get('exclusive');
+    const isComplement = searchParams.get('complement');
     const sort = searchParams.get('sort'); // price-asc, price-desc, stock-asc, stock-desc
 
     // Build filter
@@ -30,6 +31,13 @@ export async function GET(req: NextRequest) {
     }
     if (isExclusive === 'true') {
       where.isExclusive = true;
+    }
+    
+    // Default to only standard products if not querying complements explicitly
+    if (isComplement === 'true') {
+      where.isComplement = true;
+    } else {
+      where.isComplement = { not: true };
     }
 
     // Build sorting order
@@ -80,6 +88,7 @@ export async function POST(req: NextRequest) {
       tags,
       isExclusive,
       isFeatured,
+      isComplement,
     } = body;
 
     if (!name || !description || price === undefined || !category) {
@@ -102,12 +111,14 @@ export async function POST(req: NextRequest) {
         tags: tags || [],
         isExclusive: !!isExclusive,
         isFeatured: !!isFeatured,
+        isComplement: !!isComplement,
       },
     });
 
     // Clear caches so the homepage and catalog page reflect the change immediately
     revalidatePath('/');
     revalidatePath('/catalog');
+    revalidatePath('/complements');
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error: any) {

@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   Truck,
   Tags,
-  CalendarCheck
+  CalendarCheck,
+  Gift
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -109,6 +110,7 @@ function AuthenticatedAdmin({ children }: { children: React.ReactNode }) {
   const menuItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={18} /> },
     { name: 'Productos', path: '/admin/products', icon: <ShoppingBag size={18} /> },
+    { name: 'Complementos', path: '/admin/complements', icon: <Gift size={18} /> },
     { name: 'Categorías', path: '/admin/categories', icon: <Tags size={18} /> },
     { name: 'Pedidos', path: '/admin/orders', icon: <Receipt size={18} /> },
     { name: 'Suscripciones', path: '/admin/subscriptions', icon: <CalendarCheck size={18} /> },

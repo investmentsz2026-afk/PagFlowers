@@ -82,19 +82,9 @@ export default function Footer() {
         {/* Delivery Coverage */}
         <div>
           <h4 className="font-serif text-sm tracking-widest text-gold-400 uppercase mb-6">Cobertura en Lima</h4>
-          <p className="text-xs text-[#8C8C8C] mb-4 leading-relaxed">
-            Realizamos despachos en distritos clave de Lima Metropolitana con tarifas personalizadas:
+          <p className="text-xs text-[#8C8C8C] leading-relaxed">
+            Realizamos despachos a domicilio en Lima Metropolitana con tarifas y horarios flexibles.
           </p>
-          <ul className="grid grid-cols-2 gap-2 text-[11px] text-[#8C8C8C]">
-            <li>• Miraflores</li>
-            <li>• San Isidro</li>
-            <li>• S. de Surco</li>
-            <li>• La Molina</li>
-            <li>• San Borja</li>
-            <li>• Barranco</li>
-            <li>• Chorrillos</li>
-            <li>• San Miguel</li>
-          </ul>
         </div>
 
         {/* Contact info */}

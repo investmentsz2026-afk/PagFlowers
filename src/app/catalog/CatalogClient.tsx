@@ -244,6 +244,32 @@ export default function CatalogClient({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 space-y-8">
 
+      {/* Complements Catalog Premium CTA Banner */}
+      <Link 
+        href="/complements" 
+        className="group block relative rounded-2xl overflow-hidden border border-[#2B1210]/15 dark:border-white/10 shadow-md hover:shadow-lg transition-all duration-500 bg-gradient-to-r from-[#2B1210] to-[#3d1916] py-3.5 px-6"
+      >
+        <div className="absolute top-0 right-0 w-48 h-48 bg-[#F46261]/10 rounded-full blur-2xl pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+        
+        <div className="relative flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5">
+            <span className="bg-gold-400 text-luxury-black font-sans text-[8px] uppercase font-extrabold tracking-widest py-0.5 px-2 rounded shadow-sm">
+              Detalles
+            </span>
+            <span className="font-serif text-sm text-white font-bold tracking-wide">
+              ¿Quieres añadir globos, chocolates o vinos finos a tu arreglo?
+            </span>
+            <span className="font-sans text-xs text-white/60 font-light hidden lg:inline">
+              — Personaliza tu entrega con complementos de lujo.
+            </span>
+          </div>
+          
+          <span className="font-sans text-[10px] uppercase tracking-widest text-gold-400 font-extrabold flex items-center gap-1 group-hover:text-gold-300 transition-colors">
+            Ver Complementos <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
+          </span>
+        </div>
+      </Link>
+
       {/* 2. Search & Controls Bar */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-[var(--luxury-cream)]/80 dark:bg-[#1A1A1A]/60 backdrop-blur-xl p-4 rounded-3xl border border-[var(--luxury-rose)]/30 dark:border-white/20 shadow-lg">
         {/* Search */}

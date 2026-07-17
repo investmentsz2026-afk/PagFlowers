@@ -9,16 +9,18 @@ export async function PUT(
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);
     const body = await request.json();
-    const { name, slug, description, isActive } = body;
+    const { name, slug, description, isActive, isComplement } = body;
+
+    const dataToUpdate: any = {};
+    if (name !== undefined) dataToUpdate.name = name;
+    if (slug !== undefined) dataToUpdate.slug = slug;
+    if (description !== undefined) dataToUpdate.description = description;
+    if (isActive !== undefined) dataToUpdate.isActive = isActive;
+    if (isComplement !== undefined) dataToUpdate.isComplement = !!isComplement;
 
     const category = await prisma.category.update({
       where: { id },
-      data: {
-        name,
-        slug,
-        description,
-        isActive,
-      },
+      data: dataToUpdate,
     });
 
     return NextResponse.json(category);

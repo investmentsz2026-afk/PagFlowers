@@ -50,8 +50,8 @@ export default async function EnlacesPage() {
       title: 'GLOBOS Y COMPLEMENTOS',
       subtitle: 'Personaliza tus arreglos con detalles únicos.',
       icon: <Heart size={24} className="text-[#F46261]" />,
-      href: `https://wa.me/${whatsappNumber}?text=Hola,%20quiero%20agregar%20globos%20a%20mi%20pedido.`,
-      external: true,
+      href: '/complements',
+      external: false,
     },
     {
       title: 'COMPRAS CORPORATIVAS',

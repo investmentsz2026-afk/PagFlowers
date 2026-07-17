@@ -17,6 +17,11 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   try {
     // Fetch all products from database to feed the client catalog
     products = await prisma.product.findMany({
+      where: {
+        isComplement: {
+          not: true
+        }
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -24,7 +29,12 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
     // Fetch active categories
     dbCategories = await prisma.category.findMany({
-      where: { isActive: true },
+      where: { 
+        isActive: true,
+        isComplement: {
+          not: true
+        }
+      },
       orderBy: { name: 'asc' },
     });
   } catch (error) {
