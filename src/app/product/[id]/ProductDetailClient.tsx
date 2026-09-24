@@ -35,16 +35,14 @@ export default function ProductDetailClient({
   const [cardSender, setCardSender] = useState('');
   const [cardRecipient, setCardRecipient] = useState('');
   const [cardMessage, setCardMessage] = useState('');
-  const [cardStyle, setCardStyle] = useState('GOLD'); // GOLD, WHITE, ROMANCE, MINIMAL
+  const [cardStyle, setCardStyle] = useState('EMPRESA');
   const [isAdded, setIsAdded] = useState(false);
 
   const activePrice = product.salePrice !== null ? product.salePrice : product.price;
   const isOutOfStock = product.stock <= 0;
 
   const cardTemplates = [
-    { id: 'GOLD', name: 'Golden Luxury (Lacre)', classes: 'bg-[#FCFAF6] border-[#D4AF37] text-[#111111] font-serif' },
-    { id: 'WHITE', name: 'Purity White', classes: 'bg-white border-neutral-200 text-[#111111] font-sans' },
-    { id: 'ROMANCE', name: 'Romantic Rose', classes: 'bg-[#FAF0ED] border-[#E8D3C9] text-red-950 font-serif' },
+    { id: 'EMPRESA', name: 'Tarjeta de la Empresa RossyFlowers', classes: 'bg-[#FCFAF6] border-[#D4AF37] text-[#111111] font-serif' },
   ];
 
   const handleAddToCart = () => {
@@ -53,7 +51,7 @@ export default function ProductDetailClient({
     // Build dedication string
     let fullDedication = '';
     if (cardRecipient || cardMessage || cardSender) {
-      fullDedication = `Para: ${cardRecipient || 'Alguien Especial'} | Mensaje: ${cardMessage || 'Sin mensaje'} | De: ${cardSender || 'Anónimo'} (Estilo: ${cardStyle})`;
+      fullDedication = `Para: ${cardRecipient || 'Alguien Especial'} | Mensaje: ${cardMessage || 'Sin mensaje'} | De: ${cardSender || 'Anónimo'} (Tarjeta de la Empresa RossyFlowers)`;
     }
 
     addToCart(
@@ -170,15 +168,17 @@ export default function ProductDetailClient({
             </p>
 
             {/* Template Selector */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {cardTemplates.map((tmpl) => (
                 <button
                   key={tmpl.id}
+                  type="button"
                   onClick={() => setCardStyle(tmpl.id)}
-                  className={`px-3 py-2 text-[10px] font-semibold tracking-widest uppercase border rounded transition-all cursor-pointer ${
-                    cardStyle === tmpl.id ? 'border-[#F46261] bg-[#F46261]/10 text-[#F46261]' : 'border-neutral-200 hover:border-[#F46261]/50'
+                  className={`px-3.5 py-2 text-[10px] font-bold tracking-widest uppercase border rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    cardStyle === tmpl.id ? 'border-[#F46261] bg-[#F46261]/10 text-[#F46261] shadow-sm' : 'border-neutral-200 hover:border-[#F46261]/50 text-neutral-700'
                   }`}
                 >
+                  <Sparkles size={12} className="text-[#F46261]" />
                   {tmpl.name}
                 </button>
               ))}
@@ -224,17 +224,19 @@ export default function ProductDetailClient({
 
             {/* Live Gift Card Preview Mock */}
             {(cardSender || cardRecipient || cardMessage) && (
-              <div className={`p-4 border rounded-lg shadow-sm ${
-                cardTemplates.find(t => t.id === cardStyle)?.classes
+              <div className={`p-4 border rounded-xl shadow-sm ${
+                cardTemplates.find(t => t.id === cardStyle)?.classes || cardTemplates[0].classes
               } text-xs tracking-wider animate-fadeIn space-y-2`}>
-                <div className="flex justify-between border-b pb-1 border-current opacity-30 text-[9px]">
-                  <span>TARJETA DEDICATORIA</span>
-                  <span>PREVIEW</span>
+                <div className="flex justify-between items-center border-b pb-1.5 border-current opacity-40 text-[9px] font-sans font-bold">
+                  <span className="flex items-center gap-1">
+                    <Sparkles size={11} className="text-[#D4AF37]" /> TARJETA OFICIAL ROSSYFLOWERS
+                  </span>
+                  <span className="text-[8px] uppercase tracking-widest">VISTA PREVIA</span>
                 </div>
                 <div>
-                  {cardRecipient && <p className="font-semibold">Querido(a): {cardRecipient}</p>}
-                  {cardMessage && <p className="italic my-2 whitespace-pre-line leading-relaxed">"{cardMessage}"</p>}
-                  {cardSender && <p className="text-right">Con cariño: {cardSender}</p>}
+                  {cardRecipient && <p className="font-semibold text-neutral-900">Para: {cardRecipient}</p>}
+                  {cardMessage && <p className="italic my-2 whitespace-pre-line leading-relaxed text-neutral-800">"{cardMessage}"</p>}
+                  {cardSender && <p className="text-right text-[11px] text-neutral-900 font-medium">De: {cardSender}</p>}
                 </div>
               </div>
             )}
