@@ -206,11 +206,12 @@ export default function CatalogClient({
           className="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105"
           style={{ backgroundImage: `url(${banner.bgImage})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/40 z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--luxury-cream)]/90 via-transparent to-black/30 dark:from-[var(--background)] z-0" />
+        {/* Crisp Contrast Overlays (Sin niebla ni brillo opaco) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-black/15 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0" />
         
-        {/* MagicRings Background */}
-        <div className="absolute inset-0 z-0 opacity-40 flex items-center justify-center pointer-events-none mix-blend-screen">
+        {/* MagicRings Background (Sutil y elegante) */}
+        <div className="absolute inset-0 z-0 opacity-25 flex items-center justify-center pointer-events-none mix-blend-screen">
           <MagicRings
             darkColor="#A855F7" 
             darkColorTwo="#00C9FF"
