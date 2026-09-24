@@ -198,9 +198,14 @@ export default function CheckoutPage() {
 
               {/* 1. Contact Info */}
               <div className="space-y-4">
-                <h2 className="font-serif text-base text-luxury-black font-semibold border-b border-gold-400/10 pb-2">
-                  1. Información de Contacto
-                </h2>
+                <div>
+                  <h2 className="font-serif text-base text-luxury-black font-semibold border-b border-gold-400/10 pb-2">
+                    1. Información de Contacto (Destinatario)
+                  </h2>
+                  <p className="font-sans text-[11px] text-luxury-black/70 italic mt-1">
+                    * Ingrese los datos de la persona que recibirá las flores y el regalo en su domicilio.
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="font-sans text-[10px] uppercase tracking-wider text-[#111111] font-bold">Nombre Completo *</label>

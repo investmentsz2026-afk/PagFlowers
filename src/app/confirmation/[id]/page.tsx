@@ -211,9 +211,14 @@ function ConfirmationPageContent({ params }: PageProps) {
             {/* Delivery Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs font-sans">
               <div className="space-y-3">
-                <h3 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600 print:text-black">
-                  Datos de Entrega
-                </h3>
+                <div>
+                  <h3 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600 print:text-black">
+                    Datos de Entrega (Destino)
+                  </h3>
+                  <p className="text-[10px] text-luxury-black/60 italic mt-0.5 print:text-black/70">
+                    Lugar y fecha programada de entrega
+                  </p>
+                </div>
                 <ul className="space-y-2 text-luxury-black/70 print:text-black">
                   <li className="flex gap-2">
                     <MapPin size={14} className="text-gold-400 flex-shrink-0 mt-0.5 print:hidden" />
@@ -231,9 +236,14 @@ function ConfirmationPageContent({ params }: PageProps) {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600 print:text-black">
-                  Cliente & Contacto
-                </h3>
+                <div>
+                  <h3 className="font-bold text-luxury-black uppercase tracking-wider text-[10px] text-gold-600 print:text-black">
+                    Cliente & Contacto (Destinatario)
+                  </h3>
+                  <div className="mt-1 p-2 rounded-lg bg-gold-400/15 border border-gold-400/30 text-[10.5px] leading-relaxed text-luxury-black/80 font-medium print:bg-gray-100 print:border-black/20 print:text-black">
+                    📌 <strong>Nota:</strong> Estos datos corresponden a la persona que va a recibir las flores / el regalo.
+                  </div>
+                </div>
                 <ul className="space-y-1.5 text-luxury-black/70 print:text-black">
                   <li><strong className="text-luxury-black/90 print:text-black font-bold">Nombre:</strong> {order.clientName}</li>
                   <li><strong className="text-luxury-black/90 print:text-black font-bold">Teléfono:</strong> {order.clientPhone}</li>
