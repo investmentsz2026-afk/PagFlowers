@@ -75,6 +75,7 @@ interface OurStoryConfig {
   text1: string;
   text2: string;
   image: string;
+  secondaryImage?: string;
 }
 
 interface PlanConfig {
@@ -144,7 +145,8 @@ const DEFAULT_STORY: OurStoryConfig = {
   subtitle: 'RossyFlowers Art',
   text1: 'En **RossyFlowers** entendemos que las flores no son un obsequio cualquiera; son un canal directo hacia el corazón y la memoria de quien las recibe. Diseñamos bajo un concepto de alta costura floral en Lima, seleccionando cada tallo una por una para crear composiciones cargadas de emoción, elegancia y exclusividad.',
   text2: 'Evitamos los arreglos genéricos y ordinarios. Cada uno de nuestros diseños cuenta con un sello propio de lujo, desde nuestras cajas aterciopeladas hasta las dedicatorias lacradas a mano con cera real. Hacemos que cada entrega genere un verdadero impacto **WOW**, transformando un día común en una anécdota de orgullo inolvidable.',
-  image: '/images/products/bouquet-pasteles.webp'
+  image: '/images/products/bouquet-pasteles.webp',
+  secondaryImage: '/images/products/caja-rosas.webp',
 };
 
 export default function AdminContentPage() {
@@ -156,6 +158,7 @@ export default function AdminContentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingStoryField, setUploadingStoryField] = useState<'image' | 'secondaryImage' | null>(null);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [catalogPdf, setCatalogPdf] = useState('');
@@ -357,11 +360,11 @@ export default function AdminContentPage() {
     setOurStory((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStoryImageUpload = async (field: 'image' | 'secondaryImage', e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
+    setUploadingStoryField(field);
     setError('');
 
     const formData = new FormData();
@@ -379,7 +382,7 @@ export default function AdminContentPage() {
 
       if (res.ok) {
         const data = await res.json();
-        setOurStory((prev) => ({ ...prev, image: data.url }));
+        setOurStory((prev) => ({ ...prev, [field]: data.url }));
       } else {
         const err = await res.json();
         setError(err.message || 'Error al subir la imagen.');
@@ -387,7 +390,36 @@ export default function AdminContentPage() {
     } catch (err) {
       setError('Error de conexión al subir la imagen.');
     } finally {
-      setUploading(false);
+      setUploadingStoryField(null);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleStoryImageUpload('image', e);
+  };
+
+  const saveOurStoryToDb = async () => {
+    setSaving(true);
+    setSuccess(false);
+    setError('');
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: 'our_story', value: ourStory }),
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError('Error al guardar la sección Nuestra Historia.');
+      }
+    } catch (err) {
+      setError('Error de conexión al guardar Nuestra Historia.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -891,13 +923,28 @@ export default function AdminContentPage() {
             </div>
           </div>
 
-          {/* Form Content */}
+          {/* Form Content: Nuestra Historia */}
           <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
-            <div className="flex items-center gap-2 border-b border-gold-800/10 pb-3">
-              <Sparkles size={16} className="text-gold-400" />
-              <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-                Sección: Nuestra Historia
-              </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gold-800/10 pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-gold-400" />
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                    Sección: Nuestra Historia
+                  </h3>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">
+                    Personaliza los títulos, párrafos y las dos imágenes superpuestas de la sección.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={saveOurStoryToDb}
+                disabled={saving}
+                className="px-3.5 py-2 bg-gold-400 hover:bg-gold-500 text-neutral-950 rounded-lg text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm disabled:opacity-50 self-start sm:self-auto"
+              >
+                <Save size={14} /> {saving ? 'Guardando...' : 'Guardar Historia'}
+              </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -949,45 +996,106 @@ export default function AdminContentPage() {
                 </div>
               </div>
 
-              {/* Image Upload Field */}
-              <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Imagen Principal de la Sección</label>
-                
-                <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-4 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-64">
-                  {ourStory.image ? (
-                    <div className="absolute inset-0">
-                      <img src={ourStory.image} alt="Nuestra Historia" className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity" />
+              {/* Both Images: Main & Overlapping */}
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* 1. Imagen Principal (Fondo Grande) */}
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-gold-400 block font-bold">
+                        1. Imagen Principal (Fondo)
+                      </label>
+                      <p className="text-[9px] text-neutral-400">
+                        Foto grande de fondo (800x1000 px, vertical 4:5).
+                      </p>
                     </div>
-                  ) : (
-                    <ImageIcon size={40} className="text-gold-800/40" />
-                  )}
-                  
-                  <div className="relative z-10 flex flex-col items-center">
-                    <span className="bg-gold-400 text-neutral-950 font-bold text-[10px] uppercase tracking-widest py-2 px-4 rounded-lg cursor-pointer flex items-center gap-2 shadow-lg hover:bg-gold-500 transition-colors">
-                      {uploading ? 'Subiendo...' : <><UploadCloud size={14} /> Cargar Imagen</>}
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={uploading}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                    />
-                    <p className="text-[9px] text-white/50 mt-3 max-w-xs leading-relaxed">
-                      Formatos recomendados: JPG, PNG o WEBP. Tamaño máximo: 5MB.
-                      Orientación vertical u horizontal (se adaptará automáticamente).
-                    </p>
+
+                    <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-56">
+                      {ourStory.image ? (
+                        <div className="absolute inset-0">
+                          <img src={ourStory.image} alt="Imagen Principal" className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity" />
+                        </div>
+                      ) : (
+                        <ImageIcon size={32} className="text-gold-800/40" />
+                      )}
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <span className="bg-gold-400 text-neutral-950 font-bold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                          {uploadingStoryField === 'image' ? 'Subiendo...' : <><UploadCloud size={13} /> Cargar Imagen</>}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleStoryImageUpload('image', e)}
+                          disabled={uploadingStoryField !== null}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 text-xs">
+                      <label className="text-[9px] uppercase tracking-wider text-gold-200/60 block font-semibold">Ruta / URL Imagen Principal</label>
+                      <input
+                        type="text"
+                        value={ourStory.image}
+                        onChange={(e) => handleChange('image', e.target.value)}
+                        className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 2. Imagen Superpuesta (Flotante en Esquina) */}
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-gold-400 block font-bold">
+                        2. Imagen Superpuesta (Flotante)
+                      </label>
+                      <p className="text-[9px] text-neutral-400">
+                        Foto encima en la esquina (600x750 px o cuadrada).
+                      </p>
+                    </div>
+
+                    <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-56">
+                      {(ourStory.secondaryImage || '/images/products/caja-rosas.webp') ? (
+                        <div className="absolute inset-0">
+                          <img src={ourStory.secondaryImage || '/images/products/caja-rosas.webp'} alt="Imagen Superpuesta" className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity" />
+                        </div>
+                      ) : (
+                        <ImageIcon size={32} className="text-gold-800/40" />
+                      )}
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <span className="bg-gold-400 text-neutral-950 font-bold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                          {uploadingStoryField === 'secondaryImage' ? 'Subiendo...' : <><UploadCloud size={13} /> Cargar Imagen</>}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleStoryImageUpload('secondaryImage', e)}
+                          disabled={uploadingStoryField !== null}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 text-xs">
+                      <label className="text-[9px] uppercase tracking-wider text-gold-200/60 block font-semibold">Ruta / URL Imagen Superpuesta</label>
+                      <input
+                        type="text"
+                        value={ourStory.secondaryImage || ''}
+                        onChange={(e) => handleChange('secondaryImage', e.target.value)}
+                        placeholder="/images/products/caja-rosas.webp"
+                        className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none text-[11px]"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Ruta de la Imagen (Auto)</label>
-                  <input
-                    type="text"
-                    readOnly
-                    value={ourStory.image}
-                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/70 outline-none select-all"
-                  />
+                <div className="p-3 bg-neutral-900/60 border border-gold-800/20 rounded-xl text-[10px] text-neutral-300 flex items-start gap-2">
+                  <Sparkles size={14} className="text-gold-400 mt-0.5 shrink-0" />
+                  <span>
+                    <strong>Efecto de 2 Fotos Superpuestas:</strong> La <em>Imagen Principal</em> se muestra amplia de fondo, y la <em>Imagen Superpuesta</em> aparece flotando en la esquina inferior izquierda con su marco de lujo de RossyFlowers.
+                  </span>
                 </div>
               </div>
             </div>

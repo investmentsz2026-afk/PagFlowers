@@ -24,7 +24,8 @@ export default async function HomePage() {
     subtitle: 'RossyFlowers Art',
     text1: 'En RossyFlowers entendemos que las flores no son un obsequio cualquiera; son un canal directo hacia el corazón y la memoria de quien las recibe. Diseñamos bajo un concepto de alta costura floral en Lima, seleccionando cada tallo una por una para crear composiciones cargadas de emoción, elegancia y exclusividad.',
     text2: 'Evitamos los arreglos genéricos y ordinarios. Cada uno de nuestros diseños cuenta con un sello propio de lujo, desde nuestras cajas aterciopeladas hasta las dedicatorias lacradas a mano con cera real. Hacemos que cada entrega genere un verdadero impacto WOW, transformando un día común en una anécdota de orgullo inolvidable.',
-    image: '/images/products/bouquet-pasteles.webp'
+    image: '/images/products/bouquet-pasteles.webp',
+    secondaryImage: '/images/products/caja-rosas.webp',
   };
 
   try {
@@ -179,7 +180,7 @@ export default async function HomePage() {
               </MotionView>
               <MotionView direction="left" delay={0.2} className="w-1/2 aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl absolute -bottom-10 -left-4 z-20 border-4 border-luxury-cream hidden sm:block">
                 <img
-                  src="/images/products/caja-rosas.webp"
+                  src={ourStory.secondaryImage || '/images/products/caja-rosas.webp'}
                   alt="Detalles de lujo de RossyFlowers"
                   className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />
