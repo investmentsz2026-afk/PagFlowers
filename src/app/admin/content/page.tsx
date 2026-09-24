@@ -1,7 +1,38 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Save, AlertCircle, Sparkles, UploadCloud, Image as ImageIcon, Trash2, Edit3, Plus, Star } from 'lucide-react';
+import { Save, AlertCircle, Sparkles, UploadCloud, Image as ImageIcon, Trash2, Edit3, Plus, Star, ArrowUp, ArrowDown } from 'lucide-react';
+
+interface BannerConfig {
+  id: number | string;
+  tag?: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  image: string;
+  link: string;
+}
+
+const DEFAULT_BANNERS: BannerConfig[] = [
+  {
+    id: 1,
+    tag: 'RossyFlowers • Lima',
+    title: 'Elegancia y Exclusividad en Cada Flor',
+    subtitle: 'Diseños florales de autor inspirados en la alta costura para expresar tus sentimientos más profundos en Lima.',
+    buttonText: 'Ver Colección Premium',
+    image: '/images/hero/banner-1.webp',
+    link: '/catalog',
+  },
+  {
+    id: 2,
+    tag: 'RossyFlowers • Lima',
+    title: 'Momentos Inolvidables',
+    subtitle: 'Colecciones exclusivas en cajas aterciopeladas y orquídeas imperiales con envío express garantizado el mismo día.',
+    buttonText: 'Explorar Cajas de Lujo',
+    image: '/images/hero/banner-2.webp',
+    link: '/catalog?category=Cajas+de+Lujo',
+  },
+];
 
 interface TestimonialConfig {
   name: string;
@@ -114,6 +145,10 @@ const DEFAULT_STORY: OurStoryConfig = {
 };
 
 export default function AdminContentPage() {
+  const [banners, setBanners] = useState<BannerConfig[]>(DEFAULT_BANNERS);
+  const [bannerUploadingIndex, setBannerUploadingIndex] = useState<number | null>(null);
+  const [savingBanners, setSavingBanners] = useState(false);
+
   const [ourStory, setOurStory] = useState<OurStoryConfig>(DEFAULT_STORY);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -143,7 +178,8 @@ export default function AdminContentPage() {
   useEffect(() => {
     async function loadContent() {
       try {
-        const [resStory, resPdf, resTestimonials, resPlans, resFlowers] = await Promise.all([
+        const [resBanners, resStory, resPdf, resTestimonials, resPlans, resFlowers] = await Promise.all([
+          fetch('/api/content?key=home_banners'),
           fetch('/api/content?key=our_story'),
           fetch('/api/content?key=monthly_catalog_pdf'),
           fetch('/api/content?key=testimonials'),
@@ -151,6 +187,13 @@ export default function AdminContentPage() {
           fetch('/api/content?key=subscription_flowers')
         ]);
         
+        if (resBanners.ok) {
+          const bannerData = await resBanners.json();
+          if (bannerData && Array.isArray(bannerData) && bannerData.length > 0) {
+            setBanners(bannerData);
+          }
+        }
+
         if (resStory.ok) {
           const data = await resStory.json();
           if (data && Object.keys(data).length > 0) {
@@ -195,6 +238,112 @@ export default function AdminContentPage() {
     }
     loadContent();
   }, []);
+
+  const handleBannerChange = (index: number, field: keyof BannerConfig, value: string) => {
+    setBanners((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleBannerImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBannerUploadingIndex(index);
+    setError('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setBanners((prev) => {
+          const updated = [...prev];
+          updated[index] = { ...updated[index], image: data.url };
+          return updated;
+        });
+      } else {
+        const err = await res.json();
+        setError(err.message || 'Error al subir la imagen.');
+      }
+    } catch (err) {
+      setError('Error de conexión al subir la imagen.');
+    } finally {
+      setBannerUploadingIndex(null);
+    }
+  };
+
+  const handleAddBanner = () => {
+    const newBanner: BannerConfig = {
+      id: Date.now(),
+      tag: 'RossyFlowers • Lima',
+      title: 'Nuevo Diseño Floral Exclusivo',
+      subtitle: 'Diseños florales de autor inspirados en la alta costura para expresar tus sentimientos.',
+      buttonText: 'Ver Colección Premium',
+      image: '/images/hero/banner-1.webp',
+      link: '/catalog',
+    };
+    setBanners((prev) => [...prev, newBanner]);
+  };
+
+  const handleDeleteBanner = (index: number) => {
+    if (banners.length <= 1) {
+      alert('Debe haber al menos una diapositiva en el carrusel de portada.');
+      return;
+    }
+    if (confirm(`¿Está seguro de eliminar la diapositiva #${index + 1}?`)) {
+      setBanners((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleMoveBanner = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= banners.length) return;
+    setBanners((prev) => {
+      const updated = [...prev];
+      const temp = updated[index];
+      updated[index] = updated[targetIndex];
+      updated[targetIndex] = temp;
+      return updated;
+    });
+  };
+
+  const saveBannersToDb = async (bannersToSave: BannerConfig[] = banners) => {
+    setSavingBanners(true);
+    setSuccess(false);
+    setError('');
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: 'home_banners', value: bannersToSave }),
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError('Error al guardar el carrusel en el servidor.');
+      }
+    } catch (err) {
+      setError('Error de conexión al guardar el carrusel.');
+    } finally {
+      setSavingBanners(false);
+    }
+  };
 
   const handleChange = (field: keyof OurStoryConfig, value: string) => {
     setOurStory((prev) => ({ ...prev, [field]: value }));
@@ -339,6 +488,11 @@ export default function AdminContentPage() {
         fetch('/api/content', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'home_banners', value: banners }),
+        }),
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ key: 'our_story', value: ourStory }),
         }),
         fetch('/api/content', {
@@ -383,7 +537,7 @@ export default function AdminContentPage() {
       {/* Header */}
       <div>
         <h1 className="font-serif text-3xl font-bold text-white tracking-wide">Gestión de Contenido</h1>
-        <p className="text-xs text-neutral-400 mt-1">Personaliza los textos e imágenes de "Nuestra Historia" en la página principal.</p>
+        <p className="text-xs text-neutral-400 mt-1">Personaliza el carrusel de portada, textos e imágenes de la página principal.</p>
       </div>
 
       {loading ? (
@@ -394,6 +548,7 @@ export default function AdminContentPage() {
           {/* Notifications */}
           {success && (
             <div className="p-4 bg-green-950/30 border border-green-500/20 text-green-400 rounded-xl text-xs font-bold transition-all space-y-1">
+              <div>✔ ¡Portada Carrusel guardada con éxito!</div>
               <div>✔ ¡Sección "Nuestra Historia" actualizada con éxito!</div>
               <div>✔ ¡Catálogo PDF del mes guardado con éxito!</div>
               <div>✔ ¡Testimonios del carrusel guardados con éxito!</div>
@@ -405,6 +560,235 @@ export default function AdminContentPage() {
               <span>{error}</span>
             </div>
           )}
+
+          {/* SECTION 1: PORTADA CARRUSEL (HERO SLIDESHOW) */}
+          <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gold-800/10 pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-gold-400" />
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                    Sección: Portada Carrusel (Hero Slideshow)
+                  </h3>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">
+                    Edita las imágenes, textos y enlaces de cada diapositiva en la portada principal.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleAddBanner}
+                  className="px-3.5 py-2 bg-neutral-900 border border-gold-800/30 text-gold-400 hover:bg-gold-400 hover:text-neutral-950 rounded-lg text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                >
+                  <Plus size={14} /> Agregar Slide
+                </button>
+                <button
+                  type="button"
+                  onClick={() => saveBannersToDb()}
+                  disabled={savingBanners}
+                  className="px-3.5 py-2 bg-gold-400 hover:bg-gold-500 text-neutral-950 rounded-lg text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                >
+                  <Save size={14} /> {savingBanners ? 'Guardando...' : 'Guardar Carrusel'}
+                </button>
+              </div>
+            </div>
+
+            {/* List of Carousel Slides */}
+            <div className="space-y-6">
+              {banners.map((banner, index) => (
+                <div
+                  key={banner.id ?? index}
+                  className="p-5 sm:p-6 bg-neutral-900/80 border border-gold-800/20 rounded-xl space-y-5 transition-all"
+                >
+                  {/* Slide Card Header */}
+                  <div className="flex items-center justify-between border-b border-gold-800/10 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-6 h-6 rounded-full bg-gold-400/20 text-gold-400 border border-gold-400/30 flex items-center justify-center text-xs font-bold font-mono">
+                        {index + 1}
+                      </span>
+                      <span className="font-serif text-xs font-bold text-white uppercase tracking-wider">
+                        Diapositiva #{index + 1}
+                      </span>
+                      {index === 0 && (
+                        <span className="text-[9px] font-sans font-bold bg-gold-400/15 text-gold-400 px-2 py-0.5 rounded border border-gold-400/20 uppercase tracking-widest">
+                          Portada Inicial
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        disabled={index === 0}
+                        onClick={() => handleMoveBanner(index, 'up')}
+                        className="p-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed text-neutral-300 rounded cursor-pointer transition-colors"
+                        title="Mover hacia arriba"
+                      >
+                        <ArrowUp size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={index === banners.length - 1}
+                        onClick={() => handleMoveBanner(index, 'down')}
+                        className="p-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed text-neutral-300 rounded cursor-pointer transition-colors"
+                        title="Mover hacia abajo"
+                      >
+                        <ArrowDown size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteBanner(index)}
+                        className="p-1.5 bg-neutral-800 hover:bg-red-950/40 text-red-400 hover:text-red-300 rounded cursor-pointer transition-colors ml-1"
+                        title="Eliminar esta diapositiva"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Slide Content Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Left: Texts */}
+                    <div className="space-y-4 text-xs">
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                          Sobretítulo / Etiqueta Pequeña
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Ej. RossyFlowers • Lima"
+                          value={banner.tag || ''}
+                          onChange={(e) => handleBannerChange(index, 'tag', e.target.value)}
+                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                          Título Principal *
+                        </label>
+                        <input
+                          required
+                          type="text"
+                          placeholder="Ej. Elegancia y Exclusividad en Cada Flor"
+                          value={banner.title}
+                          onChange={(e) => handleBannerChange(index, 'title', e.target.value)}
+                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white font-semibold outline-none focus:border-gold-400"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                          Descripción / Subtítulo *
+                        </label>
+                        <textarea
+                          required
+                          rows={3}
+                          placeholder="Escribe la descripción que acompañará este slide..."
+                          value={banner.subtitle}
+                          onChange={(e) => handleBannerChange(index, 'subtitle', e.target.value)}
+                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 resize-none leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                            Texto del Botón
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Ej. Ver Colección Premium"
+                            value={banner.buttonText}
+                            onChange={(e) => handleBannerChange(index, 'buttonText', e.target.value)}
+                            className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                            Enlace del Botón
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Ej. /catalog o /catalog?category=Cajas+de+Lujo"
+                            value={banner.link}
+                            onChange={(e) => handleBannerChange(index, 'link', e.target.value)}
+                            className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Image Upload & Preview */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                        Imagen de Fondo de la Portada
+                      </label>
+
+                      <div className="bg-neutral-950 border-2 border-dashed border-gold-800/30 rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-4 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-56">
+                        {banner.image ? (
+                          <div className="absolute inset-0">
+                            <img
+                              src={banner.image}
+                              alt={`Slide ${index + 1}`}
+                              className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity"
+                            />
+                          </div>
+                        ) : (
+                          <ImageIcon size={40} className="text-gold-800/40" />
+                        )}
+
+                        <div className="relative z-10 flex flex-col items-center">
+                          <span className="bg-gold-400 text-neutral-950 font-bold text-[10px] uppercase tracking-widest py-2 px-4 rounded-lg cursor-pointer flex items-center gap-2 shadow-lg hover:bg-gold-500 transition-colors">
+                            {bannerUploadingIndex === index ? (
+                              'Subiendo...'
+                            ) : (
+                              <>
+                                <UploadCloud size={14} /> Cargar Imagen
+                              </>
+                            )}
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleBannerImageUpload(index, e)}
+                            disabled={bannerUploadingIndex !== null}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                          <p className="text-[9px] text-white/50 mt-3 max-w-xs leading-relaxed">
+                            Formatos recomendados: JPG, PNG o WEBP. Orientación panorámica horizontal.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 text-xs">
+                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                          Ruta de la Imagen (Auto)
+                        </label>
+                        <input
+                          type="text"
+                          value={banner.image}
+                          onChange={(e) => handleBannerChange(index, 'image', e.target.value)}
+                          placeholder="/images/hero/banner-1.webp o ruta subida"
+                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/70 outline-none select-all text-[11px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Add New Slide Button */}
+              <button
+                type="button"
+                onClick={handleAddBanner}
+                className="w-full py-4 bg-neutral-900/50 hover:bg-neutral-900 border border-dashed border-gold-800/30 hover:border-gold-400/50 rounded-xl text-gold-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+              >
+                <Plus size={16} /> Agregar Nueva Diapositiva (Slide)
+              </button>
+            </div>
+          </div>
 
           {/* Form Content */}
           <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">

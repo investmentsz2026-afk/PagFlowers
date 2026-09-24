@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
 // GET /api/content - Retrieve website config content keys
 export async function GET(req: NextRequest) {
@@ -63,6 +64,13 @@ export async function PUT(req: NextRequest) {
       update: { value: valueString },
       create: { key, value: valueString },
     });
+
+    try {
+      revalidatePath('/');
+      revalidatePath('/catalog');
+    } catch (e) {
+      // Revalidation silent catch
+    }
 
     return NextResponse.json({
       message: `Configuración "${key}" actualizada exitosamente.`,

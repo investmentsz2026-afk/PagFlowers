@@ -33,16 +33,30 @@ export default async function HomePage() {
       where: { key: 'home_banners' },
     });
     if (bannerContent) {
-      banners = JSON.parse(bannerContent.value);
-    } else {
+      const parsed = JSON.parse(bannerContent.value);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        banners = parsed;
+      }
+    }
+    if (banners.length === 0) {
       banners = [
         {
           id: 1,
+          tag: 'RossyFlowers • Lima',
           title: 'Elegancia y Exclusividad en Cada Flor',
           subtitle: 'Diseños florales de autor inspirados en la alta costura para expresar tus sentimientos más profundos en Lima.',
           buttonText: 'Ver Colección Premium',
           image: '/images/hero/banner-1.webp',
           link: '/catalog',
+        },
+        {
+          id: 2,
+          tag: 'RossyFlowers • Lima',
+          title: 'Momentos Inolvidables',
+          subtitle: 'Colecciones exclusivas en cajas aterciopeladas y orquídeas imperiales con envío express garantizado el mismo día.',
+          buttonText: 'Explorar Cajas de Lujo',
+          image: '/images/hero/banner-2.webp',
+          link: '/catalog?category=Cajas+de+Lujo',
         },
       ];
     }
