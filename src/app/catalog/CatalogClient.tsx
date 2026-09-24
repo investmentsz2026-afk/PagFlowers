@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, SlidersHorizontal, ArrowUpDown, Grid3X3, Grid2X2 } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, Grid3X3, Grid2X2, Sparkles } from 'lucide-react';
 
 interface Product {
   id: number;
@@ -26,10 +26,12 @@ export default function CatalogClient({
   initialProducts,
   initialCategory = 'TODOS',
   dbCategories = [],
+  catalogBanner,
 }: {
   initialProducts: Product[];
   initialCategory?: string;
   dbCategories?: any[];
+  catalogBanner?: any;
 }) {
   const [products] = useState<Product[]>(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -185,24 +187,35 @@ export default function CatalogClient({
     );
   };
 
+  const banner = {
+    tag: catalogBanner?.tag ?? 'RossyFlowers • Colección Exclusiva',
+    subtitle: catalogBanner?.subtitle ?? 'BIENVENIDOS A LA',
+    title: catalogBanner?.title ?? 'Alta Florería',
+    description: catalogBanner?.description ?? 'Colección exclusiva de flores y regalos de autor en Lima con despacho express.',
+    bgImage: catalogBanner?.bgImage || '/images/hero/banner-1.webp',
+    image1: catalogBanner?.image1 || '/images/products/bouquet-pasteles.webp',
+    image2: catalogBanner?.image2 || '/images/products/caja-rosas.webp',
+  };
+
   return (
     <div className="w-full">
-      {/* 1. Page Header (Full Screen Welcome Hero) */}
-      <div className="relative w-full h-[80vh] sm:h-screen flex items-center justify-center overflow-hidden mb-12 shadow-2xl">
-        {/* Background Image with Overlay */}
+      {/* 1. Page Header (Modern Catalog Hero with Overlapping Images) */}
+      <div className="relative w-full min-h-[75vh] sm:min-h-[82vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden mb-12 shadow-2xl">
+        {/* Background Image with Ambient Overlay */}
         <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/images/hero/banner-1.webp)' }}
+          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105"
+          style={{ backgroundImage: `url(${banner.bgImage})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-[var(--luxury-cream)] dark:to-[var(--background)] z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/75 to-black/40 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--luxury-cream)]/90 via-transparent to-black/30 dark:from-[var(--background)] z-0" />
         
         {/* MagicRings Background */}
-        <div className="absolute inset-0 z-0 opacity-90 flex items-center justify-center pointer-events-auto mix-blend-screen">
+        <div className="absolute inset-0 z-0 opacity-40 flex items-center justify-center pointer-events-none mix-blend-screen">
           <MagicRings
             darkColor="#A855F7" 
             darkColorTwo="#00C9FF"
-            lightColor="#DC2626" // Rojo
-            lightColorTwo="#16A34A" // Verde
+            lightColor="#DC2626"
+            lightColorTwo="#16A34A"
             color="#D4AF37"
             colorTwo="#E11D48"
             ringCount={8}
@@ -227,18 +240,81 @@ export default function CatalogClient({
           />
         </div>
 
-        {/* Title Content */}
-        <div className="relative z-10 text-center space-y-6 px-4 pt-20 sm:pt-28">
-          <span className="font-sans text-sm sm:text-base tracking-[0.5em] text-gold-400 uppercase font-bold block drop-shadow-md">
-            Bienvenidos a la
-          </span>
-          <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl text-white font-bold tracking-wide drop-shadow-2xl">
-            Alta Florería
-          </h1>
-          <p className="font-sans text-sm sm:text-lg text-white/90 max-w-2xl mx-auto tracking-widest drop-shadow-md">
-            COLECCIÓN EXCLUSIVA DE FLORES Y REGALOS
-          </p>
-          <div className="w-32 h-1.5 bg-gold-400 mx-auto mt-10 rounded-full shadow-[0_0_15px_rgba(212,175,55,0.6)]" />
+        {/* Content Container: Left Column (Text) & Right Column (Modern Overlapping Images) */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-28">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column: Title Content */}
+            <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+              {banner.tag && (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold-400/20 border border-gold-400/40 backdrop-blur-md shadow-sm">
+                  <Sparkles size={13} className="text-gold-400" />
+                  <span className="font-sans text-[10px] sm:text-xs uppercase tracking-widest text-gold-300 font-bold">
+                    {banner.tag}
+                  </span>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <span className="font-sans text-xs sm:text-sm tracking-[0.45em] text-gold-400 uppercase font-bold block drop-shadow-md">
+                  {banner.subtitle}
+                </span>
+                <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl text-white font-bold tracking-wide drop-shadow-2xl leading-[1.08]">
+                  {banner.title}
+                </h1>
+              </div>
+
+              <p className="font-sans text-sm sm:text-base text-white/90 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light drop-shadow whitespace-pre-line">
+                {banner.description}
+              </p>
+
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <div className="w-16 h-1 bg-gold-400 rounded-full shadow-[0_0_12px_rgba(212,175,55,0.7)]" />
+                <span className="text-[11px] font-sans uppercase tracking-wider text-white/70 font-medium">
+                  Flores de Invernadero • Alta Costura Floral Lima
+                </span>
+              </div>
+            </div>
+
+            {/* Right Column: Modern Composition with 2 Overlapping Styled Photos */}
+            <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-sm sm:max-w-md flex items-center justify-center">
+                
+                {/* Subtle Glow Behind Images */}
+                <div className="absolute -inset-4 bg-gradient-to-tr from-gold-500/25 via-rose-500/15 to-transparent rounded-full blur-2xl pointer-events-none" />
+
+                {/* Photo 1: Main Modern Luxury Rounded Card */}
+                <div className="w-[82%] sm:w-[85%] aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.85)] border-2 border-white/25 dark:border-gold-400/30 relative group bg-neutral-900/60 backdrop-blur-sm z-10 transition-transform duration-500 hover:scale-[1.02]">
+                  <img
+                    src={banner.image1 || '/images/products/bouquet-pasteles.webp'}
+                    alt={banner.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                  <div className="absolute bottom-4 left-5 right-5 text-white/95 flex items-center justify-between">
+                    <span className="font-serif text-xs sm:text-sm tracking-wider font-semibold">RossyFlowers</span>
+                    <span className="text-[9px] uppercase tracking-widest font-sans bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/30 font-bold">
+                      Alta Florería
+                    </span>
+                  </div>
+                </div>
+
+                {/* Photo 2: Overlapping Floating Card (Modern Arched / Rounded Pill) */}
+                <div className="w-[48%] sm:w-[50%] aspect-square rounded-full sm:rounded-[2rem] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] border-4 border-luxury-cream dark:border-[#1E1E1E] absolute -bottom-6 -left-2 sm:-left-6 z-20 transition-transform duration-500 hover:scale-105 group bg-neutral-900">
+                  <img
+                    src={banner.image2 || '/images/products/caja-rosas.webp'}
+                    alt="Detalle RossyFlowers"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+                </div>
+
+                {/* Decorative Luxury Accents */}
+                <div className="absolute -top-4 -right-4 w-20 h-20 border-t-2 border-r-2 border-gold-400/40 rounded-tr-3xl pointer-events-none hidden sm:block" />
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 

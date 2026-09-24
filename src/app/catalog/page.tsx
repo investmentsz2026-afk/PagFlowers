@@ -14,8 +14,20 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
   let products: any[] = [];
   let dbCategories: any[] = [];
+  let catalogBanner: any = null;
+
   try {
-    // Fetch all products from database to feed the client catalog
+    // 0. Fetch catalog banner settings from database
+    const bannerContent = await prisma.content.findUnique({
+      where: { key: 'catalog_banner' },
+    });
+    if (bannerContent) {
+      try {
+        catalogBanner = JSON.parse(bannerContent.value);
+      } catch (e) {}
+    }
+
+    // 1. Fetch all products from database to feed the client catalog
     products = await prisma.product.findMany({
       where: {
         isComplement: {
@@ -27,7 +39,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
       },
     });
 
-    // Fetch active categories
+    // 2. Fetch active categories
     dbCategories = await prisma.category.findMany({
       where: { 
         isActive: true,
@@ -43,7 +55,12 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
   return (
     <div className="bg-[#FAF8F5] dark:bg-[#0B0B0B] min-h-screen pb-20">
-      <CatalogClient initialProducts={products} initialCategory={initialCategory} dbCategories={dbCategories} />
+      <CatalogClient
+        initialProducts={products}
+        initialCategory={initialCategory}
+        dbCategories={dbCategories}
+        catalogBanner={catalogBanner}
+      />
     </div>
   );
 }

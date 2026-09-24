@@ -78,6 +78,16 @@ interface OurStoryConfig {
   secondaryImage?: string;
 }
 
+interface CatalogBannerConfig {
+  tag?: string;
+  subtitle: string;
+  title: string;
+  description: string;
+  bgImage: string;
+  image1: string;
+  image2: string;
+}
+
 interface PlanConfig {
   id: string;
   name: string;
@@ -149,12 +159,26 @@ const DEFAULT_STORY: OurStoryConfig = {
   secondaryImage: '/images/products/caja-rosas.webp',
 };
 
+const DEFAULT_CATALOG_BANNER: CatalogBannerConfig = {
+  tag: 'RossyFlowers • Colección Exclusiva',
+  subtitle: 'BIENVENIDOS A LA',
+  title: 'Alta Florería',
+  description: 'Colección exclusiva de flores y regalos de autor en Lima con despacho express.',
+  bgImage: '/images/hero/banner-1.webp',
+  image1: '/images/products/bouquet-pasteles.webp',
+  image2: '/images/products/caja-rosas.webp',
+};
+
 export default function AdminContentPage() {
   const [banners, setBanners] = useState<BannerConfig[]>(DEFAULT_BANNERS);
   const [uploadingBanner, setUploadingBanner] = useState<{ index: number; field: 'image' | 'bgImage' } | null>(null);
   const [savingBanners, setSavingBanners] = useState(false);
 
   const [ourStory, setOurStory] = useState<OurStoryConfig>(DEFAULT_STORY);
+  const [catalogBanner, setCatalogBanner] = useState<CatalogBannerConfig>(DEFAULT_CATALOG_BANNER);
+  const [uploadingCatalogField, setUploadingCatalogField] = useState<'bgImage' | 'image1' | 'image2' | null>(null);
+  const [savingCatalogBanner, setSavingCatalogBanner] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -184,9 +208,10 @@ export default function AdminContentPage() {
   useEffect(() => {
     async function loadContent() {
       try {
-        const [resBanners, resStory, resPdf, resTestimonials, resPlans, resFlowers] = await Promise.all([
+        const [resBanners, resStory, resCatalogBanner, resPdf, resTestimonials, resPlans, resFlowers] = await Promise.all([
           fetch('/api/content?key=home_banners'),
           fetch('/api/content?key=our_story'),
+          fetch('/api/content?key=catalog_banner'),
           fetch('/api/content?key=monthly_catalog_pdf'),
           fetch('/api/content?key=testimonials'),
           fetch('/api/content?key=subscription_plans'),
@@ -204,6 +229,13 @@ export default function AdminContentPage() {
           const data = await resStory.json();
           if (data && Object.keys(data).length > 0) {
             setOurStory({ ...DEFAULT_STORY, ...data });
+          }
+        }
+
+        if (resCatalogBanner.ok) {
+          const catData = await resCatalogBanner.json();
+          if (catData && Object.keys(catData).length > 0) {
+            setCatalogBanner({ ...DEFAULT_CATALOG_BANNER, ...catData });
           }
         }
         
@@ -423,6 +455,69 @@ export default function AdminContentPage() {
     }
   };
 
+  const handleCatalogChange = (field: keyof CatalogBannerConfig, value: string) => {
+    setCatalogBanner((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCatalogImageUpload = async (field: 'bgImage' | 'image1' | 'image2', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCatalogField(field);
+    setError('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setCatalogBanner((prev) => ({ ...prev, [field]: data.url }));
+      } else {
+        const err = await res.json();
+        setError(err.message || 'Error al subir la imagen del catálogo.');
+      }
+    } catch (err) {
+      setError('Error de conexión al subir la imagen del catálogo.');
+    } finally {
+      setUploadingCatalogField(null);
+    }
+  };
+
+  const saveCatalogBannerToDb = async () => {
+    setSavingCatalogBanner(true);
+    setSuccess(false);
+    setError('');
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/content', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ key: 'catalog_banner', value: catalogBanner }),
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError('Error al guardar la portada de catálogo.');
+      }
+    } catch (err) {
+      setError('Error de conexión al guardar la portada de catálogo.');
+    } finally {
+      setSavingCatalogBanner(false);
+    }
+  };
+
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -538,6 +633,11 @@ export default function AdminContentPage() {
         fetch('/api/content', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: 'catalog_banner', value: catalogBanner }),
+        }),
+        fetch('/api/content', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ key: 'monthly_catalog_pdf', value: catalogPdf }),
         }),
         fetch('/api/content', {
@@ -590,6 +690,7 @@ export default function AdminContentPage() {
             <div className="p-4 bg-green-950/30 border border-green-500/20 text-green-400 rounded-xl text-xs font-bold transition-all space-y-1">
               <div>✔ ¡Portada Carrusel guardada con éxito!</div>
               <div>✔ ¡Sección "Nuestra Historia" actualizada con éxito!</div>
+              <div>✔ ¡Portada de Catálogo guardada con éxito!</div>
               <div>✔ ¡Catálogo PDF del mes guardado con éxito!</div>
               <div>✔ ¡Testimonios del carrusel guardados con éxito!</div>
             </div>
@@ -1098,6 +1199,238 @@ export default function AdminContentPage() {
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* SECTION: PORTADA DE CATÁLOGO (/catalog) */}
+          <div className="bg-neutral-950 border border-gold-800/10 rounded-2xl p-6 sm:p-8 shadow-md space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gold-800/10 pb-4">
+              <div className="flex items-center gap-2">
+                <Sparkles size={16} className="text-gold-400" />
+                <div>
+                  <h3 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
+                    Sección: Portada de Catálogo (/catalog)
+                  </h3>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">
+                    Personaliza los títulos y las 3 imágenes (fondo panorámico y 2 fotos destacadas superpuestas) de la página de catálogo.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={saveCatalogBannerToDb}
+                disabled={savingCatalogBanner}
+                className="px-3.5 py-2 bg-gold-400 hover:bg-gold-500 text-neutral-950 rounded-lg text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm disabled:opacity-50 self-start sm:self-auto"
+              >
+                <Save size={14} /> {savingCatalogBanner ? 'Guardando...' : 'Guardar Portada Catálogo'}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Text Fields */}
+              <div className="space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Insignia / Tag Superior</label>
+                  <input
+                    type="text"
+                    value={catalogBanner.tag || ''}
+                    onChange={(e) => handleCatalogChange('tag', e.target.value)}
+                    placeholder="Ej. RossyFlowers • Colección Exclusiva"
+                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none focus:border-gold-400"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Subtítulo Pequeño</label>
+                  <input
+                    required
+                    type="text"
+                    value={catalogBanner.subtitle}
+                    onChange={(e) => handleCatalogChange('subtitle', e.target.value)}
+                    placeholder="Ej. BIENVENIDOS A LA"
+                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none focus:border-gold-400"
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Título Principal</label>
+                  <input
+                    required
+                    type="text"
+                    value={catalogBanner.title}
+                    onChange={(e) => handleCatalogChange('title', e.target.value)}
+                    placeholder="Ej. Alta Florería"
+                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none focus:border-gold-400"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">Descripción / Frase</label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={catalogBanner.description}
+                    onChange={(e) => handleCatalogChange('description', e.target.value)}
+                    placeholder="Ej. Colección exclusiva de flores y regalos de autor en Lima con despacho express."
+                    className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-900 text-white outline-none focus:border-gold-400 resize-none"
+                  />
+                </div>
+
+                {/* Info badge */}
+                <div className="p-3 bg-neutral-900/60 border border-gold-800/20 rounded-xl text-[10px] text-neutral-300 flex items-start gap-2">
+                  <Sparkles size={14} className="text-gold-400 mt-0.5 shrink-0" />
+                  <span>
+                    <strong>Estructura Visual:</strong> Los textos se muestran al <strong>lado izquierdo</strong> y las dos fotos destacadas se exhiben con estilo moderno y superpuesto al <strong>lado derecho</strong>, todo sobre la foto de fondo panorámica.
+                  </span>
+                </div>
+              </div>
+
+              {/* 3 Images: Panoramic Background + 2 Overlapping Featured Photos */}
+              <div className="space-y-5">
+                
+                {/* 1. Fondo Panorámico */}
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-gold-400 block font-bold">
+                      1. Foto de Fondo Panorámica
+                    </label>
+                    <p className="text-[9px] text-neutral-400">
+                      Imagen que cubre el fondo de la portada (Recomendado 1920x1080 px).
+                    </p>
+                  </div>
+
+                  <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-36">
+                    {catalogBanner.bgImage ? (
+                      <div className="absolute inset-0">
+                        <img src={catalogBanner.bgImage} alt="Fondo Catálogo" className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity" />
+                      </div>
+                    ) : (
+                      <ImageIcon size={28} className="text-gold-800/40" />
+                    )}
+                    
+                    <div className="relative z-10 flex flex-col items-center">
+                      <span className="bg-gold-400 text-neutral-950 font-bold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                        {uploadingCatalogField === 'bgImage' ? 'Subiendo...' : <><UploadCloud size={13} /> Cargar Fondo</>}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleCatalogImageUpload('bgImage', e)}
+                        disabled={uploadingCatalogField !== null}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-xs">
+                    <input
+                      type="text"
+                      value={catalogBanner.bgImage}
+                      onChange={(e) => handleCatalogChange('bgImage', e.target.value)}
+                      placeholder="/images/hero/banner-1.webp"
+                      className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none text-[11px]"
+                    />
+                  </div>
+                </div>
+
+                {/* 2 & 3. Dos Fotos Destacadas (Lado Derecho) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  
+                  {/* Foto Destacada 1 */}
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-gold-400 block font-bold">
+                        2. Foto Destacada 1 (Principal)
+                      </label>
+                      <p className="text-[9px] text-neutral-400">
+                        Foto frontal derecha (800x1000 px, vertical 4:5).
+                      </p>
+                    </div>
+
+                    <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-44">
+                      {catalogBanner.image1 ? (
+                        <div className="absolute inset-0">
+                          <img src={catalogBanner.image1} alt="Foto 1" className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity" />
+                        </div>
+                      ) : (
+                        <ImageIcon size={28} className="text-gold-800/40" />
+                      )}
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <span className="bg-gold-400 text-neutral-950 font-bold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                          {uploadingCatalogField === 'image1' ? 'Subiendo...' : <><UploadCloud size={13} /> Cargar Foto 1</>}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCatalogImageUpload('image1', e)}
+                          disabled={uploadingCatalogField !== null}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 text-xs">
+                      <input
+                        type="text"
+                        value={catalogBanner.image1}
+                        onChange={(e) => handleCatalogChange('image1', e.target.value)}
+                        placeholder="/images/products/bouquet-pasteles.webp"
+                        className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Foto Destacada 2 */}
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-gold-400 block font-bold">
+                        3. Foto Destacada 2 (Superpuesta)
+                      </label>
+                      <p className="text-[9px] text-neutral-400">
+                        Foto flotando encima (600x600 px o cuadrada).
+                      </p>
+                    </div>
+
+                    <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-44">
+                      {catalogBanner.image2 ? (
+                        <div className="absolute inset-0">
+                          <img src={catalogBanner.image2} alt="Foto 2" className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity" />
+                        </div>
+                      ) : (
+                        <ImageIcon size={28} className="text-gold-800/40" />
+                      )}
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <span className="bg-gold-400 text-neutral-950 font-bold text-[9px] uppercase tracking-widest py-1.5 px-3 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                          {uploadingCatalogField === 'image2' ? 'Subiendo...' : <><UploadCloud size={13} /> Cargar Foto 2</>}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleCatalogImageUpload('image2', e)}
+                          disabled={uploadingCatalogField !== null}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1 text-xs">
+                      <input
+                        type="text"
+                        value={catalogBanner.image2}
+                        onChange={(e) => handleCatalogChange('image2', e.target.value)}
+                        placeholder="/images/products/caja-rosas.webp"
+                        className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
             </div>
           </div>
 
