@@ -47,8 +47,8 @@ export default async function HomePage() {
           subtitle: 'Diseños florales de autor inspirados en la alta costura para expresar tus sentimientos más profundos en Lima.',
           buttonText: 'Ver Colección Premium',
           image: '/images/hero/banner-1.webp',
+          bgImage: '',
           link: '/catalog',
-          imageFit: 'contain',
         },
         {
           id: 2,
@@ -57,8 +57,8 @@ export default async function HomePage() {
           subtitle: 'Colecciones exclusivas en cajas aterciopeladas y orquídeas imperiales con envío express garantizado el mismo día.',
           buttonText: 'Explorar Cajas de Lujo',
           image: '/images/hero/banner-2.webp',
+          bgImage: '',
           link: '/catalog?category=Cajas+de+Lujo',
-          imageFit: 'contain',
         },
       ];
     }

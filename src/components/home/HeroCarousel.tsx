@@ -10,9 +10,9 @@ export interface Banner {
   title: string;
   subtitle: string;
   buttonText: string;
-  image: string;
+  image: string;       // Foto del arreglo (cuadro destacado)
+  bgImage?: string;   // Foto de fondo panorámica (1920x1080)
   link: string;
-  imageFit?: 'contain' | 'cover';
 }
 
 export default function HeroCarousel({ banners }: { banners: Banner[] }) {
@@ -36,110 +36,86 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
 
   if (!banners || banners.length === 0) return null;
 
-  // Make sure current doesn't exceed banners length if slides changed
   const safeCurrent = current >= banners.length ? 0 : current;
 
   return (
-    <div className="relative min-h-[620px] sm:min-h-[680px] lg:min-h-[640px] h-[92vh] sm:h-screen w-full overflow-hidden bg-[#0D0D0D]">
+    <div className="relative min-h-[640px] sm:min-h-[700px] lg:min-h-[680px] h-[94vh] sm:h-screen w-full overflow-hidden bg-[#0D0D0D]">
       {/* Slider Track */}
       <div 
         className="flex h-full w-full transition-transform duration-500 ease-in-out will-change-transform"
         style={{ transform: `translateX(-${safeCurrent * 100}%)` }}
       >
         {banners.map((banner, index) => {
-          const isCover = banner.imageFit === 'cover';
+          const bannerId = banner.id ?? index;
 
           return (
-            <div key={banner.id ?? index} className="w-full h-full flex-shrink-0 relative overflow-hidden flex items-center">
-              {isCover ? (
-                /* Full Cover Mode */
-                <>
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${banner.image})` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D] via-[#0D0D0D]/75 to-transparent" />
-                  
-                  <div className="relative z-10 w-full flex items-center pt-20 sm:pt-28 pb-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                      <div className="max-w-2xl text-left space-y-5 sm:space-y-6">
-                        <span className="font-sans text-xs tracking-[0.4em] uppercase text-gold-400 block font-semibold [text-shadow:0_2px_4px_rgba(0,0,0,0.8)]">
-                          {banner.tag || 'RossyFlowers • Lima'}
-                        </span>
-                        <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl font-bold uppercase tracking-wider text-white leading-tight sm:leading-none [text-shadow:0_4px_24px_rgba(0,0,0,0.8)]">
-                          {banner.title}
-                        </h1>
-                        <p className="font-sans text-xs sm:text-base lg:text-lg text-white/90 leading-relaxed max-w-xl font-light [text-shadow:0_2px_8px_rgba(0,0,0,0.8)]">
-                          {banner.subtitle}
-                        </p>
-                        <div className="pt-2 sm:pt-4">
-                          <Link
-                            href={banner.link || '/catalog'}
-                            className="inline-flex items-center justify-center px-8 sm:px-10 py-3.5 sm:py-4 bg-white dark:bg-[#1A1A1A] text-[#111111] dark:text-white font-semibold text-xs tracking-widest uppercase hover:bg-gold-400 hover:text-white transition-all duration-300 rounded shadow-2xl hover:scale-105 active:scale-95 duration-500 border border-transparent hover:border-gold-300 cursor-pointer"
-                          >
-                            {banner.buttonText || 'Ver Colección Premium'}
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
+            <div key={bannerId} className="w-full h-full flex-shrink-0 relative overflow-hidden bg-[#0D0D0D] flex items-center">
+              
+              {/* 1. Full Background Image Layer */}
+              {banner.bgImage ? (
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-all duration-700"
+                  style={{ backgroundImage: `url(${banner.bgImage})` }}
+                />
               ) : (
-                /* Responsive Adapted Mode (Default - Complete Image, Never Huge or Cropped) */
-                <>
-                  {/* Ambient blurred glow from image colors */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center filter blur-3xl opacity-20 scale-125 pointer-events-none transition-all duration-700"
-                    style={{ backgroundImage: `url(${banner.image})` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D] via-[#0D0D0D]/90 lg:via-[#0D0D0D]/75 to-[#0D0D0D]/50 pointer-events-none" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-[#0D0D0D]/60 pointer-events-none" />
+                /* Ambient glow fallback from the flower image if no custom background is uploaded */
+                <div
+                  className="absolute inset-0 bg-cover bg-center filter blur-3xl opacity-20 scale-125 transition-all duration-700 pointer-events-none"
+                  style={{ backgroundImage: `url(${banner.image})` }}
+                />
+              )}
 
-                  {/* Slide Content Grid */}
-                  <div className="relative z-10 w-full h-full flex items-center pt-20 sm:pt-24 lg:pt-20 pb-16">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
-                        
-                        {/* Text Information Column */}
-                        <div className="lg:col-span-7 text-left space-y-4 sm:space-y-6 order-2 lg:order-1">
-                          <span className="font-sans text-[11px] sm:text-xs tracking-[0.35em] uppercase text-gold-400 block font-semibold [text-shadow:0_2px_4px_rgba(0,0,0,0.8)]">
-                            {banner.tag || 'RossyFlowers • Lima'}
-                          </span>
-                          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-wider text-white leading-tight [text-shadow:0_4px_24px_rgba(0,0,0,0.8)]">
-                            {banner.title}
-                          </h1>
-                          <p className="font-sans text-xs sm:text-base lg:text-lg text-white/90 leading-relaxed max-w-xl font-light [text-shadow:0_2px_8px_rgba(0,0,0,0.8)]">
-                            {banner.subtitle}
-                          </p>
-                          <div className="pt-2 sm:pt-4">
-                            <Link
-                              href={banner.link || '/catalog'}
-                              className="inline-flex items-center justify-center px-8 sm:px-10 py-3.5 sm:py-4 bg-white dark:bg-[#1A1A1A] text-[#111111] dark:text-white font-semibold text-xs tracking-widest uppercase hover:bg-gold-400 hover:text-white transition-all duration-300 rounded shadow-2xl hover:scale-105 active:scale-95 duration-500 border border-transparent hover:border-gold-300 cursor-pointer"
-                            >
-                              {banner.buttonText || 'Ver Colección Premium'}
-                            </Link>
-                          </div>
-                        </div>
+              {/* 2. Luxury Dark Gradient Overlay: Keeps text and featured card ultra legible */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D] via-[#0D0D0D]/80 lg:via-[#0D0D0D]/65 to-[#0D0D0D]/35 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-[#0D0D0D]/50 pointer-events-none" />
 
-                        {/* Complete & Responsive Image Column */}
-                        <div className="lg:col-span-5 flex items-center justify-center order-1 lg:order-2">
-                          <div className="relative w-full max-w-xs sm:max-w-md lg:max-w-none flex items-center justify-center">
-                            {/* Decorative ambient aura */}
-                            <div className="absolute inset-0 bg-gold-400/10 rounded-3xl blur-2xl transform scale-90 pointer-events-none" />
-                            
-                            <img
-                              src={banner.image}
-                              alt={banner.title}
-                              className="relative z-10 max-h-[30vh] sm:max-h-[44vh] lg:max-h-[66vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl drop-shadow-[0_20px_40px_rgba(0,0,0,0.85)] border border-gold-400/20 transition-transform duration-500 hover:scale-[1.02]"
-                            />
-                          </div>
-                        </div>
-
+              {/* 3. Slide Content (Two Columns) */}
+              <div className="relative z-10 w-full h-full flex items-center pt-24 sm:pt-28 pb-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    
+                    {/* Left: Text Information (6 cols) */}
+                    <div className="lg:col-span-6 text-left space-y-5 sm:space-y-6 order-2 lg:order-1">
+                      <span className="font-sans text-xs tracking-[0.4em] uppercase text-gold-400 block font-semibold [text-shadow:0_2px_4px_rgba(0,0,0,0.8)]">
+                        {banner.tag || 'RossyFlowers • Lima'}
+                      </span>
+                      <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold uppercase tracking-wider text-white leading-tight [text-shadow:0_4px_24px_rgba(0,0,0,0.8)]">
+                        {banner.title}
+                      </h1>
+                      <p className="font-sans text-xs sm:text-base lg:text-lg text-white/90 leading-relaxed max-w-xl font-light [text-shadow:0_2px_8px_rgba(0,0,0,0.8)]">
+                        {banner.subtitle}
+                      </p>
+                      <div className="pt-2 sm:pt-4">
+                        <Link
+                          href={banner.link || '/catalog'}
+                          className="inline-flex items-center justify-center px-8 sm:px-10 py-3.5 sm:py-4 bg-white dark:bg-[#1A1A1A] text-[#111111] dark:text-white font-semibold text-xs tracking-widest uppercase hover:bg-gold-400 hover:text-white transition-all duration-300 rounded shadow-2xl hover:scale-105 active:scale-95 duration-500 border border-transparent hover:border-gold-300 cursor-pointer"
+                        >
+                          {banner.buttonText || 'Ver Colección Premium'}
+                        </Link>
                       </div>
                     </div>
+
+                    {/* Right: Featured Arrangement Card (6 cols) - LARGER ("cuadrito más grande") */}
+                    <div className="lg:col-span-6 flex items-center justify-center lg:justify-end order-1 lg:order-2">
+                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl flex items-center justify-center">
+                        {/* Golden halo glow */}
+                        <div className="absolute inset-0 bg-gold-400/15 rounded-3xl blur-3xl transform scale-95 pointer-events-none" />
+                        
+                        {/* The Image Card */}
+                        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] border border-white/10 bg-neutral-900/60 p-2.5 sm:p-3.5 backdrop-blur-md group w-full flex items-center justify-center">
+                          <img
+                            src={banner.image}
+                            alt={banner.title}
+                            className="max-h-[38vh] sm:max-h-[52vh] lg:max-h-[76vh] w-auto max-w-full object-contain rounded-xl sm:rounded-2xl transition-transform duration-700 group-hover:scale-[1.02]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
-                </>
-              )}
+                </div>
+              </div>
+
             </div>
           );
         })}

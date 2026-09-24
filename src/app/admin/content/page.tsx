@@ -9,9 +9,9 @@ interface BannerConfig {
   title: string;
   subtitle: string;
   buttonText: string;
-  image: string;
+  image: string;       // Foto del arreglo (cuadro destacado)
+  bgImage?: string;   // Foto de fondo panorámica (1920x1080)
   link: string;
-  imageFit?: 'contain' | 'cover';
 }
 
 const DEFAULT_BANNERS: BannerConfig[] = [
@@ -22,8 +22,8 @@ const DEFAULT_BANNERS: BannerConfig[] = [
     subtitle: 'Diseños florales de autor inspirados en la alta costura para expresar tus sentimientos más profundos en Lima.',
     buttonText: 'Ver Colección Premium',
     image: '/images/hero/banner-1.webp',
+    bgImage: '',
     link: '/catalog',
-    imageFit: 'contain',
   },
   {
     id: 2,
@@ -32,8 +32,8 @@ const DEFAULT_BANNERS: BannerConfig[] = [
     subtitle: 'Colecciones exclusivas en cajas aterciopeladas y orquídeas imperiales con envío express garantizado el mismo día.',
     buttonText: 'Explorar Cajas de Lujo',
     image: '/images/hero/banner-2.webp',
+    bgImage: '',
     link: '/catalog?category=Cajas+de+Lujo',
-    imageFit: 'contain',
   },
 ];
 
@@ -149,7 +149,7 @@ const DEFAULT_STORY: OurStoryConfig = {
 
 export default function AdminContentPage() {
   const [banners, setBanners] = useState<BannerConfig[]>(DEFAULT_BANNERS);
-  const [bannerUploadingIndex, setBannerUploadingIndex] = useState<number | null>(null);
+  const [uploadingBanner, setUploadingBanner] = useState<{ index: number; field: 'image' | 'bgImage' } | null>(null);
   const [savingBanners, setSavingBanners] = useState(false);
 
   const [ourStory, setOurStory] = useState<OurStoryConfig>(DEFAULT_STORY);
@@ -250,11 +250,15 @@ export default function AdminContentPage() {
     });
   };
 
-  const handleBannerImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBannerImageUpload = async (
+    index: number,
+    field: 'image' | 'bgImage',
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setBannerUploadingIndex(index);
+    setUploadingBanner({ index, field });
     setError('');
 
     const formData = new FormData();
@@ -274,7 +278,7 @@ export default function AdminContentPage() {
         const data = await res.json();
         setBanners((prev) => {
           const updated = [...prev];
-          updated[index] = { ...updated[index], image: data.url };
+          updated[index] = { ...updated[index], [field]: data.url };
           return updated;
         });
       } else {
@@ -284,7 +288,7 @@ export default function AdminContentPage() {
     } catch (err) {
       setError('Error de conexión al subir la imagen.');
     } finally {
-      setBannerUploadingIndex(null);
+      setUploadingBanner(null);
     }
   };
 
@@ -296,8 +300,8 @@ export default function AdminContentPage() {
       subtitle: 'Diseños florales de autor inspirados en la alta costura para expresar tus sentimientos.',
       buttonText: 'Ver Colección Premium',
       image: '/images/hero/banner-1.webp',
+      bgImage: '',
       link: '/catalog',
-      imageFit: 'contain',
     };
     setBanners((prev) => [...prev, newBanner]);
   };
@@ -724,77 +728,153 @@ export default function AdminContentPage() {
                       </div>
                     </div>
 
-                    {/* Right: Image Upload & Preview */}
-                    <div className="space-y-3">
-                      <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
-                        Imagen de Fondo de la Portada
-                      </label>
-
-                      <div className="bg-neutral-950 border-2 border-dashed border-gold-800/30 rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-4 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-56">
-                        {banner.image ? (
-                          <div className="absolute inset-0">
-                            <img
-                              src={banner.image}
-                              alt={`Slide ${index + 1}`}
-                              className="w-full h-full object-cover opacity-60 group-hover:opacity-30 transition-opacity"
-                            />
-                          </div>
-                        ) : (
-                          <ImageIcon size={40} className="text-gold-800/40" />
-                        )}
-
-                        <div className="relative z-10 flex flex-col items-center">
-                          <span className="bg-gold-400 text-neutral-950 font-bold text-[10px] uppercase tracking-widest py-2 px-4 rounded-lg cursor-pointer flex items-center gap-2 shadow-lg hover:bg-gold-500 transition-colors">
-                            {bannerUploadingIndex === index ? (
-                              'Subiendo...'
-                            ) : (
-                              <>
-                                <UploadCloud size={14} /> Cargar Imagen
-                              </>
-                            )}
+                    {/* Right: Dual Image Upload & Previews */}
+                    <div className="space-y-6">
+                      
+                      {/* Image 1: Main Flower Arrangement Photo (Card) */}
+                      <div className="p-4 bg-neutral-950/70 border border-gold-800/20 rounded-xl space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[11px] uppercase tracking-wider text-gold-400 block font-bold">
+                            1. Foto del Arreglo (Cuadro Destacado) *
+                          </label>
+                          <span className="text-[9px] bg-gold-400/10 text-gold-400 px-2 py-0.5 rounded border border-gold-400/20 font-mono">
+                            800x1000 px
                           </span>
+                        </div>
+                        
+                        <div className="p-2.5 bg-neutral-900/60 rounded-lg border border-gold-800/15 text-[10px] text-neutral-300 leading-relaxed">
+                          📌 <strong>Tamaño recomendado:</strong> <span className="text-white font-semibold">800 × 1000 px</span> o <span className="text-white font-semibold">1000 × 1000 px</span> (Vertical o Cuadrado). Esta foto se mostrará completa dentro del recuadro elegante de la derecha.
+                        </div>
+
+                        <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-48">
+                          {banner.image ? (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                              <img
+                                src={banner.image}
+                                alt={`Arreglo Slide ${index + 1}`}
+                                className="w-full h-full object-contain p-2 opacity-80 group-hover:opacity-40 transition-opacity"
+                              />
+                            </div>
+                          ) : (
+                            <ImageIcon size={32} className="text-gold-800/40" />
+                          )}
+
+                          <div className="relative z-10 flex flex-col items-center">
+                            <span className="bg-gold-400 text-neutral-950 font-bold text-[10px] uppercase tracking-widest py-2 px-3.5 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                              {uploadingBanner?.index === index && uploadingBanner?.field === 'image' ? (
+                                'Subiendo...'
+                              ) : (
+                                <>
+                                  <UploadCloud size={14} /> Cargar Foto del Arreglo
+                                </>
+                              )}
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleBannerImageUpload(index, 'image', e)}
+                              disabled={uploadingBanner !== null}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            <p className="text-[9px] text-white/60 mt-2">
+                              JPG, PNG o WEBP. Formato vertical o cuadrado.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1 text-xs">
+                          <label className="text-[9px] uppercase tracking-wider text-neutral-400 block font-semibold">
+                            Ruta de la Foto del Arreglo
+                          </label>
                           <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleBannerImageUpload(index, e)}
-                            disabled={bannerUploadingIndex !== null}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            type="text"
+                            value={banner.image}
+                            onChange={(e) => handleBannerChange(index, 'image', e.target.value)}
+                            placeholder="/images/hero/banner-1.webp o enlace"
+                            className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none select-all text-[11px]"
                           />
-                          <p className="text-[9px] text-white/50 mt-3 max-w-xs leading-relaxed">
-                            Formatos recomendados: JPG, PNG o WEBP. Orientación panorámica horizontal.
-                          </p>
                         </div>
                       </div>
 
-                      <div className="space-y-1 text-xs">
-                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
-                          Ruta de la Imagen (Auto)
-                        </label>
-                        <input
-                          type="text"
-                          value={banner.image}
-                          onChange={(e) => handleBannerChange(index, 'image', e.target.value)}
-                          placeholder="/images/hero/banner-1.webp o ruta subida"
-                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/70 outline-none select-all text-[11px]"
-                        />
+                      {/* Image 2: Background Image (Full Width & Height) */}
+                      <div className="p-4 bg-neutral-950/70 border border-gold-800/20 rounded-xl space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[11px] uppercase tracking-wider text-gold-400 block font-bold">
+                            2. Foto de Fondo de la Portada (Fondo Panorámico)
+                          </label>
+                          <span className="text-[9px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-mono font-bold">
+                            1920x1080 px (16:9)
+                          </span>
+                        </div>
+
+                        <div className="p-2.5 bg-neutral-900/60 rounded-lg border border-gold-800/15 text-[10px] text-neutral-300 leading-relaxed">
+                          📌 <strong>Tamaño EXACTO recomendado:</strong> <span className="text-white font-bold">1920 × 1080 px</span> (Panorámica Horizontal 16:9) o <span className="text-white font-bold">2560 × 1440 px</span>. Abarca todo el ancho y alto del fondo del carrusel sin verse recortada.
+                        </div>
+
+                        <div className="bg-neutral-900 border-2 border-dashed border-gold-800/30 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-3 relative overflow-hidden group hover:border-gold-400/50 transition-colors h-48">
+                          {banner.bgImage ? (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                              <img
+                                src={banner.bgImage}
+                                alt={`Fondo Slide ${index + 1}`}
+                                className="w-full h-full object-cover opacity-70 group-hover:opacity-40 transition-opacity"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center space-y-1">
+                              <ImageIcon size={32} className="text-gold-800/40" />
+                              <span className="text-[10px] text-neutral-500">Sin foto de fondo personalizada (Usa fondo oscuro/ambiental)</span>
+                            </div>
+                          )}
+
+                          <div className="relative z-10 flex flex-col items-center">
+                            <span className="bg-gold-400 text-neutral-950 font-bold text-[10px] uppercase tracking-widest py-2 px-3.5 rounded-lg cursor-pointer flex items-center gap-1.5 shadow-lg hover:bg-gold-500 transition-colors">
+                              {uploadingBanner?.index === index && uploadingBanner?.field === 'bgImage' ? (
+                                'Subiendo...'
+                              ) : (
+                                <>
+                                  <UploadCloud size={14} /> {banner.bgImage ? 'Cambiar Foto de Fondo' : 'Cargar Foto de Fondo'}
+                                </>
+                              )}
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleBannerImageUpload(index, 'bgImage', e)}
+                              disabled={uploadingBanner !== null}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            <p className="text-[9px] text-white/60 mt-2">
+                              Panorámica 1920x1080 (JPG o WEBP)
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1 text-xs">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[9px] uppercase tracking-wider text-neutral-400 block font-semibold">
+                              Ruta de la Foto de Fondo
+                            </label>
+                            {banner.bgImage && (
+                              <button
+                                type="button"
+                                onClick={() => handleBannerChange(index, 'bgImage', '')}
+                                className="text-[9px] text-red-400 hover:text-red-300 underline cursor-pointer"
+                              >
+                                Quitar fondo personalizado
+                              </button>
+                            )}
+                          </div>
+                          <input
+                            type="text"
+                            value={banner.bgImage || ''}
+                            onChange={(e) => handleBannerChange(index, 'bgImage', e.target.value)}
+                            placeholder="Dejar vacío para fondo oscuro ambiental o sube una imagen 1920x1080"
+                            className="w-full p-2 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/80 outline-none select-all text-[11px]"
+                          />
+                        </div>
                       </div>
 
-                      <div className="space-y-1 text-xs">
-                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
-                          Modo de Visualización de la Imagen
-                        </label>
-                        <select
-                          value={banner.imageFit || 'contain'}
-                          onChange={(e) => handleBannerChange(index, 'imageFit', e.target.value as any)}
-                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 text-xs"
-                        >
-                          <option value="contain">Adaptar Imagen Completa (Recomendado - Sin recortes, responsive)</option>
-                          <option value="cover">Fondo Completo (Expandir a toda la pantalla)</option>
-                        </select>
-                        <p className="text-[9px] text-neutral-400">
-                          "Adaptar Imagen Completa" ajusta el florero o arreglo sin recortar nada en el espacio del carrusel.
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
