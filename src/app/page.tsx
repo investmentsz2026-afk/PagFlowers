@@ -48,6 +48,7 @@ export default async function HomePage() {
           buttonText: 'Ver Colección Premium',
           image: '/images/hero/banner-1.webp',
           link: '/catalog',
+          imageFit: 'contain',
         },
         {
           id: 2,
@@ -57,6 +58,7 @@ export default async function HomePage() {
           buttonText: 'Explorar Cajas de Lujo',
           image: '/images/hero/banner-2.webp',
           link: '/catalog?category=Cajas+de+Lujo',
+          imageFit: 'contain',
         },
       ];
     }

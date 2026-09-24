@@ -11,6 +11,7 @@ interface BannerConfig {
   buttonText: string;
   image: string;
   link: string;
+  imageFit?: 'contain' | 'cover';
 }
 
 const DEFAULT_BANNERS: BannerConfig[] = [
@@ -22,6 +23,7 @@ const DEFAULT_BANNERS: BannerConfig[] = [
     buttonText: 'Ver Colección Premium',
     image: '/images/hero/banner-1.webp',
     link: '/catalog',
+    imageFit: 'contain',
   },
   {
     id: 2,
@@ -31,6 +33,7 @@ const DEFAULT_BANNERS: BannerConfig[] = [
     buttonText: 'Explorar Cajas de Lujo',
     image: '/images/hero/banner-2.webp',
     link: '/catalog?category=Cajas+de+Lujo',
+    imageFit: 'contain',
   },
 ];
 
@@ -294,6 +297,7 @@ export default function AdminContentPage() {
       buttonText: 'Ver Colección Premium',
       image: '/images/hero/banner-1.webp',
       link: '/catalog',
+      imageFit: 'contain',
     };
     setBanners((prev) => [...prev, newBanner]);
   };
@@ -773,6 +777,23 @@ export default function AdminContentPage() {
                           placeholder="/images/hero/banner-1.webp o ruta subida"
                           className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-gold-400/70 outline-none select-all text-[11px]"
                         />
+                      </div>
+
+                      <div className="space-y-1 text-xs">
+                        <label className="text-[10px] uppercase tracking-wider text-gold-200/60 block font-semibold">
+                          Modo de Visualización de la Imagen
+                        </label>
+                        <select
+                          value={banner.imageFit || 'contain'}
+                          onChange={(e) => handleBannerChange(index, 'imageFit', e.target.value as any)}
+                          className="w-full p-2.5 rounded border border-gold-800/20 bg-neutral-950 text-white outline-none focus:border-gold-400 text-xs"
+                        >
+                          <option value="contain">Adaptar Imagen Completa (Recomendado - Sin recortes, responsive)</option>
+                          <option value="cover">Fondo Completo (Expandir a toda la pantalla)</option>
+                        </select>
+                        <p className="text-[9px] text-neutral-400">
+                          "Adaptar Imagen Completa" ajusta el florero o arreglo sin recortar nada en el espacio del carrusel.
+                        </p>
                       </div>
                     </div>
                   </div>
