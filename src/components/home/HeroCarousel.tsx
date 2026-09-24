@@ -65,9 +65,9 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
                 />
               )}
 
-              {/* 2. Luxury Dark Gradient Overlay: Keeps text and featured card ultra legible */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D] via-[#0D0D0D]/80 lg:via-[#0D0D0D]/65 to-[#0D0D0D]/35 pointer-events-none" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-[#0D0D0D]/50 pointer-events-none" />
+              {/* 2. Light Luxury Gradient Overlay: Keeps background bright and clear while protecting text readability on the left */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D]/75 via-[#0D0D0D]/35 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D]/35 via-transparent to-[#0D0D0D]/15 pointer-events-none" />
 
               {/* 3. Slide Content (Two Columns) */}
               <div className="relative z-10 w-full h-full flex items-center pt-24 sm:pt-28 pb-16">
@@ -95,18 +95,18 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
                       </div>
                     </div>
 
-                    {/* Right: Featured Arrangement Card (6 cols) - LARGER ("cuadrito más grande") */}
+                    {/* Right: Featured Arrangement Card (Adapts tightly to image proportions with a delicate thin border and smaller footprint) */}
                     <div className="lg:col-span-6 flex items-center justify-center lg:justify-end order-1 lg:order-2">
-                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl flex items-center justify-center">
-                        {/* Golden halo glow */}
-                        <div className="absolute inset-0 bg-gold-400/15 rounded-3xl blur-3xl transform scale-95 pointer-events-none" />
+                      <div className="relative inline-flex items-center justify-center">
+                        {/* Soft golden halo glow conforming to image bounds */}
+                        <div className="absolute inset-0 bg-gold-400/10 rounded-2xl blur-xl transform scale-95 pointer-events-none" />
                         
-                        {/* The Image Card */}
-                        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl drop-shadow-[0_25px_50px_rgba(0,0,0,0.9)] border border-white/10 bg-neutral-900/60 p-2.5 sm:p-3.5 backdrop-blur-md group w-full flex items-center justify-center">
+                        {/* The Image Card: inline-flex, hugs image tightly without excess horizontal dark margins */}
+                        <div className="relative inline-flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl drop-shadow-[0_15px_30px_rgba(0,0,0,0.65)] border border-white/20 p-1 sm:p-1.5 bg-black/25 backdrop-blur-xs group transition-transform duration-500 hover:scale-[1.01]">
                           <img
                             src={banner.image}
                             alt={banner.title}
-                            className="max-h-[38vh] sm:max-h-[52vh] lg:max-h-[76vh] w-auto max-w-full object-contain rounded-xl sm:rounded-2xl transition-transform duration-700 group-hover:scale-[1.02]"
+                            className="max-h-[32vh] sm:max-h-[44vh] lg:max-h-[64vh] w-auto max-w-full object-contain rounded-xl select-none"
                           />
                         </div>
                       </div>
